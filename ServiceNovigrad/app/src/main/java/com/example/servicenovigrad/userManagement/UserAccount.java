@@ -17,6 +17,6 @@ public abstract class UserAccount {
     }
 
     public boolean isAccount(String username, String password){
-        return (username==getUsername() && user.isPassword(password));
+        return (username.equals(getUsername())) && (user.isPassword(password));
     }
 }

@@ -6,10 +6,11 @@ public class Accounts {
 
     public Accounts() {
         content=new ArrayList<UserAccount>();
+        addAccount(new Admin(new User("Weks","Team", "admin", "admin001")));
     }
 
-    public void addAccount(UserAccount account){
-        content.add(account);
+    public void addAccount(UserAccount acc){
+        content.add(acc);
     }
 
     public UserAccount getAccount(String username, String password){
@@ -21,15 +22,14 @@ public class Accounts {
         return null;
     }
 
+    public int getSize(){return content.size();}
+
     public UserAccount createAccount(String role, String username, String password, String firstName, String lastName){
         UserAccount acc = null;
-        if (role=="Admin"){
-            acc = new Admin(new User(firstName, lastName, username, password));
-        }
-        else if (role=="Employee"){
+        if (role.equals("Employee")){
             acc = new Employee(new User(firstName, lastName, username, password));
         }
-        else if (role=="Customer"){
+        else if (role.equals("Customer")){
             acc = new Customer(new User(firstName, lastName, username, password));
         }
 

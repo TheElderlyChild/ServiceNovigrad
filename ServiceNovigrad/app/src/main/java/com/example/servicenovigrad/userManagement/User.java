@@ -29,6 +29,6 @@ public class User {
     }
 
     public boolean isPassword(String value){
-        return value==password;
+        return value.equals(password);
     }
 }
