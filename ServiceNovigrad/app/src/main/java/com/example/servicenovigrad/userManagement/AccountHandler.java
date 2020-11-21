@@ -36,7 +36,13 @@ public class AccountHandler extends SQLiteOpenHelper {
                 COLUMN_ROLE + " TEXT," +
                 COLUMN_PASSWORD + " TEXT" + ")";
         db.execSQL(CREATE_ACCOUNTS_TABLE);
-        addAccount(new Admin(new User("Admin","User","admin001","onePunch")));
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, "admin001");
+        values.put(COLUMN_FIRSTNAME, "admin");
+        values.put(COLUMN_LASTNAME, "Saitama");
+        values.put(COLUMN_PASSWORD, "onePunch");
+        values.put(COLUMN_ROLE, "Admin");
+        db.insert(TABLE_ACCOUNTS, null, values);
     }
 
     @Override
@@ -68,7 +74,7 @@ public class AccountHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()){
             switch(cursor.getString(3)){
                 case "Admin":
-                   ua = new Admin(new User(cursor.getString(1),
+                    ua = new Admin(new User(cursor.getString(1),
                             cursor.getString(2),cursor.getString(0),
                             cursor.getString(4)));
                     break;
