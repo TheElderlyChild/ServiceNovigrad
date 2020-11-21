@@ -14,7 +14,6 @@ public class MainActivity extends AppCompatActivity {
     TextView screenAuth, screenWelcome;
     EditText inputUsername, inputPassword, inputFirstName, inputLastName, inputRole;
     UserAccount currentAccount;
-    AccountHandler myAccHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +28,17 @@ public class MainActivity extends AppCompatActivity {
         inputPassword=(EditText) findViewById(R.id.txtPassword);
         inputFirstName=(EditText) findViewById(R.id.txtFirstName);
         inputLastName=(EditText) findViewById(R.id.txtLastName);
-        myAccHandler=new AccountHandler(this);
         currentAccount=null;
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lookupAccount(v);
-                update();
+                try{
+                    lookupAccount(v);
+                    update();}
+                catch(Exception e){
+                    screenAuth.setText(e.toString());
+                }
             }
         });
 

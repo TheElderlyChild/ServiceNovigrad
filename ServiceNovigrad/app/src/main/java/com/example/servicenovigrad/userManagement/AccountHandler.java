@@ -30,13 +30,13 @@ public class AccountHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_ACCOUNTS_TABLE = "CREATE TABLE " +
                 TABLE_ACCOUNTS + "(" +
-                COLUMN_USERNAME + " TEXT PRIMARY KEY," + COLUMN_FIRSTNAME +
-                " TEXT," + COLUMN_LASTNAME + " TEXT," + COLUMN_ROLE +
-                " TEXT," + COLUMN_PASSWORD +
-                " TEXT" + ")";
+                COLUMN_USERNAME + " TEXT PRIMARY KEY," +
+                COLUMN_FIRSTNAME + " TEXT," +
+                COLUMN_LASTNAME + " TEXT," +
+                COLUMN_ROLE + " TEXT," +
+                COLUMN_PASSWORD + " TEXT" + ")";
         db.execSQL(CREATE_ACCOUNTS_TABLE);
         addAccount(new Admin(new User("Admin","User","admin001","onePunch")));
-
     }
 
     @Override
@@ -66,21 +66,21 @@ public class AccountHandler extends SQLiteOpenHelper {
         UserAccount ua;
 
         if (cursor.moveToFirst()){
-            switch(cursor.getString(4)){
+            switch(cursor.getString(3)){
                 case "Admin":
-                    ua = new Admin(new User(cursor.getString(1),
+                   ua = new Admin(new User(cursor.getString(1),
                             cursor.getString(2),cursor.getString(0),
-                            cursor.getString(3)));
+                            cursor.getString(4)));
                     break;
                 case "Employee":
                     ua = new Employee(new User(cursor.getString(1),
                             cursor.getString(2),cursor.getString(0),
-                            cursor.getString(3)));
+                            cursor.getString(4)));
                     break;
                 case "Customer":
                     ua = new Customer(new User(cursor.getString(1),
                             cursor.getString(2),cursor.getString(0),
-                            cursor.getString(3)));
+                            cursor.getString(4)));
                     break;
                 default:
                     ua = null;
