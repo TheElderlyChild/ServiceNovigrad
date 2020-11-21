@@ -1,7 +1,7 @@
 package com.example.servicenovigrad.userManagement;
 
 public class Customer extends UserAccount{
-    public Customer(User user){
+    protected Customer(User user){
         this.user=user;
     }
 

@@ -87,7 +87,7 @@
         android:inputType="textPersonName"
         android:hint="Last Name" />
 
-    <EditText
+    <Spinner
         android:id="@+id/txtRole"
         android:layout_width="278dp"
         android:layout_height="50dp"
@@ -95,7 +95,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="330dp"
         android:ems="10"
-        android:inputType="text"
-        android:hint="Role" />
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown"/>
 
 </RelativeLayout>

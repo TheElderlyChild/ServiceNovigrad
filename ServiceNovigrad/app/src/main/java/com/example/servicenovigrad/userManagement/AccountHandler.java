@@ -100,6 +100,17 @@ public class AccountHandler extends SQLiteOpenHelper {
         return ua;
     }
 
+    public boolean usernameExists(String username){
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_ACCOUNTS + " WHERE " +
+                COLUMN_USERNAME+ " = \""+ username + "\"";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()){result=true;}
+        return result;
+    }
+
     public boolean deleteAccount(String username, String password){
         boolean result = false;
         SQLiteDatabase db = this.getWritableDatabase();

@@ -5,8 +5,6 @@ public abstract class UserAccount {
 
     public static UserAccount createAccount(String role, User user){
         switch(role){
-            case "Admin":
-                return new Admin(user);
             case "Employee":
                 return new Employee(user);
             case "Customer":
