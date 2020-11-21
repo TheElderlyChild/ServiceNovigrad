@@ -1,3 +1,5 @@
 "# project-weks" 
-Username : admin
-Password : admin001
+
+Username : admin001
+
+Password : onePunch
