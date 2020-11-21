@@ -2,6 +2,20 @@ package com.example.servicenovigrad.userManagement;
 
 public abstract class UserAccount {
     protected User user;
+
+    public static UserAccount createAccount(String role, User user){
+        switch(role){
+            case "Admin":
+                return new Admin(user);
+            case "Employee":
+                return new Employee(user);
+            case "Customer":
+                return new Customer(user);
+            default:
+                return null;
+        }
+    }
+
     public abstract String getRole();
 
     public String getUsername(){
@@ -16,7 +30,11 @@ public abstract class UserAccount {
         return user.getLastName();
     }
 
+    public String getPassword(){
+        return user.getPassword();
+    }
+
     public boolean isAccount(String username, String password){
-        return (username.equals(getUsername())) && (user.isPassword(password));
+        return (username.equals(getUsername()) && user.isPassword(password));
     }
 }

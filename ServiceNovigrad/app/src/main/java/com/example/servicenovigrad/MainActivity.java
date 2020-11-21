@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
     TextView screenAuth, screenWelcome;
     EditText inputUsername, inputPassword, inputFirstName, inputLastName, inputRole;
     UserAccount currentAccount;
-    Accounts acc;
+    AccountHandler myAccHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +29,13 @@ public class MainActivity extends AppCompatActivity {
         inputPassword=(EditText) findViewById(R.id.txtPassword);
         inputFirstName=(EditText) findViewById(R.id.txtFirstName);
         inputLastName=(EditText) findViewById(R.id.txtLastName);
-        acc=new Accounts();
+        myAccHandler=new AccountHandler(this);
         currentAccount=null;
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentAccount = acc.getAccount(inputUsername.getText().toString(),
-                        inputPassword.getText().toString());
+                lookupAccount(v);
                 update();
             }
         });
@@ -44,11 +43,7 @@ public class MainActivity extends AppCompatActivity {
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentAccount=acc.createAccount(inputRole.getText().toString(),
-                        inputUsername.getText().toString(),
-                        inputPassword.getText().toString(),
-                        inputFirstName.getText().toString(),
-                        inputLastName.getText().toString());
+                newAccount(v);
                 update();            }
         });
     }
@@ -67,4 +62,38 @@ public class MainActivity extends AppCompatActivity {
                 "! You are logged in as "+currentAccount.getRole());
     }
 
+    public void newAccount (View view) {
+
+        UserAccount ua = UserAccount.createAccount(inputRole.getText().toString(),
+                new User(inputFirstName.getText().toString(),
+                        inputLastName.getText().toString(),
+                        inputUsername.getText().toString(),
+                        inputPassword.getText().toString()));
+
+        AccountHandler dbHandler = new AccountHandler(this);
+        dbHandler.addAccount(ua);
+
+        inputPassword.setText("");
+        inputFirstName.setText("");
+        inputLastName.setText("");
+        inputRole.setText("");
+        inputUsername.setText("");
+
+        currentAccount=ua;
+    }
+
+
+    public void lookupAccount (View view) {
+
+        AccountHandler dbHandler = new AccountHandler(this);
+        UserAccount ua = dbHandler.findAccount(inputUsername.getText().toString(),
+            inputPassword.getText().toString());
+
+        if (ua != null) {
+            inputRole.setText(String.valueOf(ua.getRole()));
+            inputFirstName.setText(String.valueOf(ua.getFirstName()));
+            inputLastName.setText(String.valueOf(ua.getLastName()));
+            currentAccount=ua;}
+
+    }
 }

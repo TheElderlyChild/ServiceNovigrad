@@ -1,7 +1,7 @@
 package com.example.servicenovigrad.userManagement;
 
 /**
- * Represents a user of the account
+ * Represents a user of an account
  */
 public class User {
     private String firstName;
@@ -26,6 +26,10 @@ public class User {
 
     public String getLastName(){
         return lastName;
+    }
+
+    public String getPassword(){
+        return password;
     }
 
     public boolean isPassword(String value){
