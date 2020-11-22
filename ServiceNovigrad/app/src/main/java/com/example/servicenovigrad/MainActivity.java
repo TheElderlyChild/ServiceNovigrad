@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.servicenovigrad.userManagement.AccountHandler;
 import com.example.servicenovigrad.userManagement.User;
 import com.example.servicenovigrad.userManagement.UserAccount;
 
@@ -45,9 +44,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try{
                     lookupAccount(v);
-                    update();}
+                    update();
+                    }
                 catch(Exception e){
-                    screenAuth.setText(e.toString());
+                    screenAuth.setText("Login Failure");
                 }
             }
         });
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     newAccount(v);
                     update();}
                 catch(Exception e){
-                    screenAuth.setText(e.toString());
+                    screenAuth.setText("Sign Up Failure");
                 }           }
         });
     }
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         inputUsername.getText().toString(),
                         inputPassword.getText().toString()));
 
-        AccountHandler dbHandler = new AccountHandler(this);
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         if (dbHandler.usernameExists(ua.getUsername())){
             screenAuth.setText("The Username has already been taken");
         }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void lookupAccount (View view) {
 
-        AccountHandler dbHandler = new AccountHandler(this);
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         UserAccount ua = dbHandler.findAccount(inputUsername.getText().toString(),
             inputPassword.getText().toString());
 
@@ -112,6 +112,5 @@ public class MainActivity extends AppCompatActivity {
         else{
             screenAuth.setText("Login Unsuccessful");
         }
-
     }
 }

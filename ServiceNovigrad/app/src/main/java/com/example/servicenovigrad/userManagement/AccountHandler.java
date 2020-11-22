@@ -1,17 +1,14 @@
 package com.example.servicenovigrad.userManagement;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
-public class AccountHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+import com.example.servicenovigrad.NovigradDBHandler;
+
+public class AccountHandler{
 
     //Class Variables
-    private static final String DATABASE_NAME = "accountsDB.db";
     public static final String TABLE_ACCOUNTS = "userAccounts";
     public static final String COLUMN_USERNAME = "_username";
     public static final String COLUMN_FIRSTNAME = "firstName";
@@ -19,15 +16,7 @@ public class AccountHandler extends SQLiteOpenHelper {
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_ROLE = "role";
 
-    private ArrayList<UserAccount> content;
-
-    public AccountHandler(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-    }
-
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
+    public static void createAccounts(SQLiteDatabase db) {
         String CREATE_ACCOUNTS_TABLE = "CREATE TABLE " +
                 TABLE_ACCOUNTS + "(" +
                 COLUMN_USERNAME + " TEXT PRIMARY KEY," +
@@ -45,14 +34,8 @@ public class AccountHandler extends SQLiteOpenHelper {
         db.insert(TABLE_ACCOUNTS, null, values);
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion,int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCOUNTS);
-        onCreate(db);
-    }
-
-    public void addAccount(UserAccount ua){
-        SQLiteDatabase db = this.getWritableDatabase();
+    public static void addAccount(NovigradDBHandler ndh, UserAccount ua){
+        SQLiteDatabase db = ndh.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_USERNAME, ua.getUsername());
         values.put(COLUMN_FIRSTNAME, ua.getFirstName());
@@ -63,8 +46,8 @@ public class AccountHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public UserAccount findAccount(String username, String password){
-        SQLiteDatabase db = this.getWritableDatabase();
+    public static UserAccount findAccount(NovigradDBHandler ndh, String username, String password){
+        SQLiteDatabase db = ndh.getWritableDatabase();
         String query = "Select * FROM " + TABLE_ACCOUNTS + " WHERE " +
                 COLUMN_USERNAME+ " = \""+ username + "\"" + " AND " +
                 COLUMN_PASSWORD+ " = \""+ password + "\"";
@@ -100,9 +83,9 @@ public class AccountHandler extends SQLiteOpenHelper {
         return ua;
     }
 
-    public boolean usernameExists(String username){
+    public static boolean usernameExists(NovigradDBHandler ndh, String username){
         boolean result = false;
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = ndh.getWritableDatabase();
         String query = "Select * FROM " + TABLE_ACCOUNTS + " WHERE " +
                 COLUMN_USERNAME+ " = \""+ username + "\"";
         Cursor cursor = db.rawQuery(query, null);
@@ -111,9 +94,9 @@ public class AccountHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    public boolean deleteAccount(String username, String password){
+    public static boolean deleteAccount(NovigradDBHandler ndh, String username, String password){
         boolean result = false;
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = ndh.getWritableDatabase();
         String query = "Select * FROM " + TABLE_ACCOUNTS + " WHERE " +
                 COLUMN_USERNAME+ " = \""+ username + "\"" + " AND " +
                 COLUMN_PASSWORD+ " = \""+ password + "\"";

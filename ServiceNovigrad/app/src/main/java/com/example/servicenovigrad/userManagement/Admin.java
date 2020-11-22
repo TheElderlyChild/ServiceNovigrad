@@ -1,7 +1,7 @@
 package com.example.servicenovigrad.userManagement;
 
 public class Admin extends UserAccount{
-    protected Admin(User user){
+    public Admin(User user){
         this.user=user;
     }
 
