@@ -17,7 +17,7 @@ public class FieldHandler{
         String CREATE_FIELDS_TABLE = "CREATE TABLE " +
                 TABLE_FIELDS + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY," +
-                COLUMN_NAME + " TEXT," +
+                COLUMN_NAME + " TEXT UNIQUE," +
                 COLUMN_TYPE + " TEXT" + ")";
         db.execSQL(CREATE_FIELDS_TABLE);
 
@@ -70,6 +70,7 @@ public class FieldHandler{
         else{
             ft = null;
         }
+        cursor.close();
         db.close();
         return ft;
     }
@@ -81,11 +82,11 @@ public class FieldHandler{
                 COLUMN_NAME+ " = \""+ name + "\"";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()){
-            String nameStr = cursor.getString(0);
+            String nameStr = cursor.getString(1);
             db.delete(TABLE_FIELDS, COLUMN_NAME + " = " + nameStr, null);
-            cursor.close();
             result = true;
         }
+        cursor.close();
         db.close();
         return result;
     }

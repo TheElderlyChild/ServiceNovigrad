@@ -12,6 +12,11 @@ public class FieldTemplate{
         this.type = type;
     }
 
+    public FieldTemplate(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
     public int getId() {
         return id;
     }

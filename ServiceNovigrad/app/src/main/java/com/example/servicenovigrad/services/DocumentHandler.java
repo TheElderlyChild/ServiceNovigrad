@@ -17,7 +17,7 @@ public class DocumentHandler{
         String CREATE_ACCOUNTS_TABLE = "CREATE TABLE " +
                 TABLE_DOCUMENTS + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY," +
-                COLUMN_NAME + " TEXT," +
+                COLUMN_NAME + " TEXT UNIQUE," +
                 COLUMN_DESCRIPTION + " TEXT" + ")";
         db.execSQL(CREATE_ACCOUNTS_TABLE);
 
@@ -58,13 +58,13 @@ public class DocumentHandler{
         if (cursor.moveToFirst()) {
             dt = new DocumentTemplate(cursor.getInt(0),cursor.getString(1),
                 cursor.getString(2));
-            cursor.close();
+
         }
         else{
             dt = null;
-            dt = new DocumentTemplate(1,"yo",
-                    query);
         }
+
+        cursor.close();
         db.close();
         return dt;
     }
@@ -76,11 +76,12 @@ public class DocumentHandler{
                 COLUMN_NAME+ " = \""+ name + "\"";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()){
-            String nameStr = cursor.getString(0);
+            String nameStr = cursor.getString(1);
             db.delete(TABLE_DOCUMENTS, COLUMN_NAME + " = " + nameStr, null);
-            cursor.close();
             result = true;
         }
+
+        cursor.close();
         db.close();
         return result;
     }

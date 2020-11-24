@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminActivity">
+
+    <Spinner
+        android:id="@+id/txtEmployee"
+        android:layout_width="256dp"
+        android:layout_height="38dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="38dp"
+        android:layout_marginLeft="38dp"
+        android:layout_marginTop="106dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:ems="10"
+        android:spinnerMode="dropdown" />
+
+    <Spinner
+        android:id="@+id/selectAvailable"
+        android:layout_width="172dp"
+        android:layout_height="34dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="31dp"
+        android:layout_marginLeft="31dp"
+        android:layout_marginTop="205dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:ems="10"
+        android:spinnerMode="dropdown" />
+
+    <Spinner
+        android:id="@+id/selectChosen"
+        android:layout_width="178dp"
+        android:layout_height="35dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="31dp"
+        android:layout_marginLeft="31dp"
+        android:layout_marginTop="262dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:ems="10"
+        android:spinnerMode="dropdown" />
+
+    <Button
+        android:id="@+id/btnSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="151dp"
+        android:text="Select" />
+
+    <TextView
+        android:id="@+id/displayMsg"
+        android:layout_width="346dp"
+        android:layout_height="83dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="37dp"
+        android:layout_marginLeft="37dp"
+        android:layout_marginTop="13dp"
+        android:text="Choose Employee" />
+
+    <Button
+        android:id="@+id/btnChoose"
+        android:layout_width="104dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="225dp"
+        android:layout_marginLeft="225dp"
+        android:layout_marginTop="199dp"
+        android:text=" Add Service" />
+
+    <Button
+        android:id="@+id/btnDelEmployee"
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="26dp"
+        android:layout_marginLeft="26dp"
+        android:layout_marginTop="405dp"
+        android:text="Delete Employee" />
+
+    <Button
+        android:id="@+id/btnAddEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="31dp"
+        android:layout_marginLeft="31dp"
+        android:layout_marginTop="334dp"
+        android:text="Add/Edit Services" />
+
+    <Button
+        android:id="@+id/btnRemove"
+        android:layout_width="108dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="223dp"
+        android:layout_marginLeft="223dp"
+        android:layout_marginTop="265dp"
+        android:text="Remove Service" />
+
+</RelativeLayout>

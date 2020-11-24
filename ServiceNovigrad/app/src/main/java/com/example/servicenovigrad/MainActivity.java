@@ -1,5 +1,6 @@
 package com.example.servicenovigrad;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                     update();
                     }
                 catch(Exception e){
-                    screenAuth.setText("Login Failure");
+                    screenAuth.setText(e.toString());
                 }
             }
         });
@@ -68,10 +69,27 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentAccount!=null) {
             screenAuth.setText("Login Successful");
-            setContentView(R.layout.relative);
-            screenWelcome = (TextView) findViewById(R.id.displayMsg);
-            screenWelcome.setText("Welcome " + currentAccount.getFirstName() +
-                "! You are logged in as " + currentAccount.getRole());
+            Intent roleIntent;
+            switch(currentAccount.getRole()){
+                case "Admin":
+                    roleIntent = new Intent(this, AdminActivity.class);
+                    roleIntent.putExtra("username", currentAccount.getUsername());
+                    roleIntent.putExtra("password", currentAccount.getPassword());
+                    startActivity(roleIntent);
+                    break;
+                case "Employee":
+                    roleIntent = new Intent(this, EmployeeActivity.class);
+                    roleIntent.putExtra("username", currentAccount.getUsername());
+                    roleIntent.putExtra("password", currentAccount.getPassword());
+                    startActivity(roleIntent);
+                    break;
+                case "Customer":
+                    roleIntent = new Intent(this, CustomerActivity.class);
+                    roleIntent.putExtra("username", currentAccount.getUsername());
+                    roleIntent.putExtra("password", currentAccount.getPassword());
+                    startActivity(roleIntent);
+                    break;
+            }
         }
     }
 

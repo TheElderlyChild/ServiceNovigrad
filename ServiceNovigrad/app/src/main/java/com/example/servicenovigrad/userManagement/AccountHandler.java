@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.servicenovigrad.NovigradDBHandler;
 
+import java.util.ArrayList;
+
 public class AccountHandler{
 
     //Class Variables
@@ -74,11 +76,12 @@ public class AccountHandler{
                 default:
                     ua = null;
             }
-            cursor.close();
+
         }
         else{
             ua = null;
         }
+        cursor.close();
         db.close();
         return ua;
     }
@@ -94,6 +97,25 @@ public class AccountHandler{
         return result;
     }
 
+    public static ArrayList<Employee> getEmployeeList(NovigradDBHandler ndh){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_ACCOUNTS + " WHERE " +
+                COLUMN_ROLE+ " = \"Employee\"";
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList<Employee> ale = new ArrayList<Employee>();
+        Employee emp;
+
+        while (cursor.moveToNext()){
+            emp = new Employee(new User(cursor.getString(1),
+                            cursor.getString(2),cursor.getString(0),
+                            cursor.getString(4)));
+            ale.add(emp);
+        }
+        cursor.close();
+        db.close();
+        return ale;
+    }
+
     public static boolean deleteAccount(NovigradDBHandler ndh, String username, String password){
         boolean result = false;
         SQLiteDatabase db = ndh.getWritableDatabase();
@@ -103,10 +125,11 @@ public class AccountHandler{
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()){
             String usernameStr = cursor.getString(0);
-            db.delete(TABLE_ACCOUNTS, COLUMN_USERNAME + " = " + usernameStr, null);
-            cursor.close();
+            db.delete(TABLE_ACCOUNTS, COLUMN_USERNAME +
+                    " = \"" + usernameStr+ "\"", null);
             result = true;
         }
+        cursor.close();
         db.close();
         return result;
     }

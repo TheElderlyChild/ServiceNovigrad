@@ -11,6 +11,11 @@ public class DocumentTemplate {
         this.description = description;
     }
 
+    public DocumentTemplate(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }
