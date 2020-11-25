@@ -15,6 +15,7 @@ import com.example.servicenovigrad.services.FieldHandler;
 import com.example.servicenovigrad.services.FieldTemplate;
 import com.example.servicenovigrad.services.Service;
 import com.example.servicenovigrad.services.ServiceHandler;
+import com.example.servicenovigrad.services.ServiceRequest;
 import com.example.servicenovigrad.userManagement.AccountHandler;
 import com.example.servicenovigrad.userManagement.Employee;
 import com.example.servicenovigrad.userManagement.UserAccount;
@@ -22,7 +23,7 @@ import com.example.servicenovigrad.userManagement.UserAccount;
 import java.util.ArrayList;
 
 public class NovigradDBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     //Class Variables
     private static final String DATABASE_NAME = "novigradDB.db";
@@ -41,6 +42,7 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         ServiceHandler.createRequirements(db);
         ServiceHandler.createInformation(db);
         ServiceHandler.createOfferings(db);
+        ServiceHandler.createServiceRequests(db);
     }
 
     @Override
@@ -61,6 +63,8 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         ServiceHandler.createOfferings(db);
         db.execSQL("DROP TABLE IF EXISTS " + AccountHandler.TABLE_DETAILS);
         AccountHandler.createEmployeeDetails(db);
+        db.execSQL("DROP TABLE IF EXISTS " + ServiceHandler.TABLE_SERVICE_REQUESTS);
+        ServiceHandler.createServiceRequests(db);
     }
 
     public void addAccount(UserAccount ua){
@@ -408,5 +412,18 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateDataFromEmployee(Employee employee){
         AccountHandler.updateDataFromEmployee(this,employee);
+    }
+
+
+    public ServiceRequest findServiceRequest(int requestID){
+        return ServiceHandler.findServiceRequest(this, requestID);
+    }
+
+    public ArrayList<ServiceRequest> findAllServiceRequests(String employeeName){
+        return ServiceHandler.findAllServiceRequests(this, employeeName);
+    }
+
+    public void updateRequestApproval(int requestID, int value){
+        ServiceHandler.updateRequestApproval(this, requestID, value);
     }
 }

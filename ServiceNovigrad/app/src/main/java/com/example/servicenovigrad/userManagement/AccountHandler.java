@@ -182,6 +182,7 @@ public class AccountHandler{
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void updateDataFromEmployee(NovigradDBHandler ndh, Employee emp){
+        if (emp.getStartTime().compareTo(emp.getEndTime())>=0){return;}
         SQLiteDatabase db = ndh.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_OPENTIME,DateTimeFormatter.ISO_TIME.format(emp.getStartTime()));

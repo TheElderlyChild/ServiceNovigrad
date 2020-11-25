@@ -20,6 +20,11 @@ public class ServiceHandler{
     public static final String TABLE_OFFERINGS="offerings";
     public static final String OFFERING_COLUMN_IS_PROV="isProvided";
 
+    public static final String TABLE_SERVICE_REQUESTS="serviceRequests";
+    public static final String REQUEST_COLUMN_ID="serviceRequestID";
+    public static final String REQUEST_COLUMN_CUSTOMER_NAME="customerUsername";
+    public static final String REQUEST_COLUMN_EMPLOYEE_NAME="employeeUsername";
+    public static final String REQUEST_APPROVED_STATUS="approvedStatus";
 
 
 
@@ -161,8 +166,21 @@ public class ServiceHandler{
         db.execSQL(CREATE_OFFERINGS_TABLE);
     }
 
-
-
+    public static void createServiceRequests(SQLiteDatabase db) {
+        String CREATE_REQUESTS_TABLE = "CREATE TABLE " +
+                TABLE_SERVICE_REQUESTS + "(" +
+                REQUEST_COLUMN_ID+ " INTEGER PRIMARY KEY," +
+                REQUEST_COLUMN_CUSTOMER_NAME + " TEXT NOT NULL," +
+                REQUEST_COLUMN_EMPLOYEE_NAME + " TEXT NOT NULL," +
+                SERVICE_COLUMN_ID + " INTEGER NOT NULL," +
+                REQUEST_APPROVED_STATUS + " INTEGER DEFAULT 0, " +
+                //Unique to avoid spamming requests
+                "UNIQUE(" + REQUEST_COLUMN_CUSTOMER_NAME + ", " +
+                SERVICE_COLUMN_ID + ", " +
+                REQUEST_COLUMN_EMPLOYEE_NAME +")"+
+                ")";
+        db.execSQL(CREATE_REQUESTS_TABLE);
+    }
 
 
 
@@ -305,6 +323,68 @@ public class ServiceHandler{
         return result;
     }
 
+    public static ServiceRequest findServiceRequest(NovigradDBHandler ndh, int requestID){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+
+
+        String query = "Select " + REQUEST_COLUMN_EMPLOYEE_NAME + ", " + REQUEST_COLUMN_CUSTOMER_NAME + ", " +
+                REQUEST_APPROVED_STATUS + ", " +
+                TABLE_SERVICES + "." + SERVICE_COLUMN_NAME +
+
+                " FROM (" + TABLE_SERVICE_REQUESTS +
+                " LEFT JOIN " + TABLE_SERVICES +
+                " ON " + TABLE_SERVICES + "." + SERVICE_COLUMN_ID + " = " +
+                TABLE_SERVICE_REQUESTS + "." + SERVICE_COLUMN_ID + ")"+
+                " WHERE " + REQUEST_COLUMN_ID + " = " + String.valueOf(requestID);
+
+
+
+        Cursor cursor = db.rawQuery(query, null);
+        Service service;
+
+        ServiceRequest request;
+
+        if (cursor.moveToFirst()) {
+           service=ndh.findService(cursor.getString(3));
+           request=new ServiceRequest(requestID, cursor.getString(0),
+                   cursor.getString(1),service, cursor.getInt(2));
+        }
+        else{
+            request=null;
+        }
+        cursor.close();
+        db.close();
+        return request;
+
+    }
+
+
+    public static ArrayList<ServiceRequest> findAllServiceRequests(NovigradDBHandler ndh, String employeeName){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_SERVICE_REQUESTS +
+            " WHERE " + REQUEST_COLUMN_EMPLOYEE_NAME+ " = \""+ employeeName+ "\"";
+
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList<ServiceRequest> als = new ArrayList<ServiceRequest>();
+        ServiceRequest request;
+
+        while (cursor.moveToNext()){
+            request = findServiceRequest(ndh, cursor.getInt(0));
+            als.add(request);
+        }
+        cursor.close();
+        db.close();
+        return als;
+    }
+
+    public static void updateRequestApproval(NovigradDBHandler ndh, int requestID, int value){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+
+        ContentValues values=new ContentValues();
+        values.put(REQUEST_APPROVED_STATUS, value);
+        db.update(TABLE_SERVICE_REQUESTS,values, REQUEST_COLUMN_ID+ " = "+ String.valueOf(requestID)
+            ,null);
+    }
 
 
 }

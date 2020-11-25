@@ -60,7 +60,6 @@ public class EmployeeActivity extends AppCompatActivity {
 
 
         try{
-            dbHandler.fillEmployeeWithData(currentAccount);
             fillWorkdaySpinner();
         }
         catch(Exception e){commentDisplay.setText(e.toString());}
@@ -112,6 +111,18 @@ public class EmployeeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try{
                     viewService(v);
+                }
+                catch(Exception e){
+                    commentDisplay.setText(e.toString());
+                }
+            }
+        });
+
+        btnViewRequests.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    viewServiceRequests(v);
                 }
                 catch(Exception e){
                     commentDisplay.setText(e.toString());
@@ -215,14 +226,25 @@ public class EmployeeActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setTimes(View view){
+        if (LocalTime.of(pickOpenTime.getHour(),pickOpenTime.getMinute()).compareTo(
+                LocalTime.of(pickCloseTime.getHour(),pickCloseTime.getMinute()))>=0){
+            commentDisplay.setText("Start Time cannot be more than or equal to end time");
+            return;
+        }
         currentAccount.setStartTime(LocalTime.of(pickOpenTime.getHour(),pickOpenTime.getMinute()));
         currentAccount.setEndTime(LocalTime.of(pickCloseTime.getHour(),pickCloseTime.getMinute()));
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         dbHandler.updateDataFromEmployee(currentAccount);
+        int position=spinnerDaySelect.getSelectedItemPosition();
+        fillWorkdaySpinner();
+        spinnerDaySelect.setSelection(position);
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void fillWorkdaySpinner(){
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.fillEmployeeWithData(currentAccount);
         ArrayAdapter<Workday> workdayAdapter = new ArrayAdapter<Workday>(this,
                 android.R.layout.simple_spinner_item, currentAccount.getWorkdays());
         spinnerDaySelect.setAdapter(workdayAdapter);
@@ -246,7 +268,16 @@ public class EmployeeActivity extends AppCompatActivity {
         if(spinnerDaySelect.getSelectedItem()==null){return;}
         Workday workday= (Workday) spinnerDaySelect.getSelectedItem();
         switchOpen.setChecked(workday.isAvailable());
-
     }
+
+    public void viewServiceRequests(View view){
+
+        Intent serviceRequestIntent = new Intent(this, ServiceRequestActivity.class);
+        serviceRequestIntent.putExtra("username", currentAccount.getUsername());
+        serviceRequestIntent.putExtra("password", currentAccount.getPassword());
+        startActivity(serviceRequestIntent);
+    }
+
+
 
 }
