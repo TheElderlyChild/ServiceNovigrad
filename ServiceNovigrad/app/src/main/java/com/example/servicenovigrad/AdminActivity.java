@@ -20,7 +20,8 @@ import java.util.Arrays;
 public class AdminActivity extends AppCompatActivity {
 
     Button btnSelectEmployee, btnChooseEmployee, btnRemoveEmployee, btnDeleteEmployee, btnAddEdit;
-    Spinner spinnerEmployee;
+    Button btnViewService, btnDelService;
+    Spinner spinnerEmployee, spinnerViewService;
     TextView textDisplay;
     Spinner spinnerAvailable, spinnerChosen;
     Admin currentAccount;
@@ -36,12 +37,15 @@ public class AdminActivity extends AppCompatActivity {
         btnRemoveEmployee= (Button) findViewById(R.id.btnRemove);
         btnDeleteEmployee= (Button) findViewById(R.id.btnDelEmployee);
         btnAddEdit= (Button) findViewById(R.id.btnAddEdit);
+        btnViewService= (Button) findViewById(R.id.btnViewService);
+        btnDelService= (Button) findViewById(R.id.btnDelService);
         spinnerEmployee = (Spinner) findViewById(R.id.txtEmployee);
         textDisplay= (TextView) findViewById(R.id.displayMsg);
         spinnerAvailable = (Spinner) findViewById(R.id.selectAvailable);
         spinnerChosen = (Spinner) findViewById(R.id.selectChosen);
+        spinnerViewService = (Spinner) findViewById(R.id.viewService);
         selectedEmployee=null;
-
+        
         Intent intent = getIntent();
 
         String username = intent.getStringExtra("username");
@@ -53,6 +57,10 @@ public class AdminActivity extends AppCompatActivity {
         ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
                 android.R.layout.simple_spinner_dropdown_item, dbHandler.getEmployeeList());
         spinnerEmployee.setAdapter(adapter);
+
+        ArrayAdapter<Service> serviceArrayAdapter = new ArrayAdapter<Service>(this,
+                android.R.layout.simple_spinner_dropdown_item, dbHandler.getAllServices());
+        spinnerViewService.setAdapter(serviceArrayAdapter);
 
         btnSelectEmployee.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +109,48 @@ public class AdminActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnViewService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    viewService(v);
+                }
+                catch(Exception e){
+                    textDisplay.setText(e.toString());
+                }
+            }
+        });
+
+        btnDelService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    deleteSelectService(v);
+                }
+                catch(Exception e){
+                    textDisplay.setText(e.toString());
+                }
+            }
+        });
+
+        btnAddEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    createService(v);
+                }
+                catch(Exception e){
+                    textDisplay.setText(e.toString());
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateOptions();
     }
 
     public void selectEmployee (View view) {
@@ -109,7 +159,7 @@ public class AdminActivity extends AppCompatActivity {
             return;
         }
         selectedEmployee = (Employee) spinnerEmployee.getSelectedItem();
-        updateOptions(view);
+        updateOptions();
 
     }
 
@@ -129,7 +179,7 @@ public class AdminActivity extends AppCompatActivity {
         dbHandler.addOffering(selectedEmployee.getUsername(),
                 selService.getId());
 
-        updateOptions(view);
+        updateOptions();
     }
 
     public void removeServiceFromEmployee (View view) {
@@ -148,7 +198,7 @@ public class AdminActivity extends AppCompatActivity {
         dbHandler.deleteOffering(selectedEmployee.getUsername(),
                 selService.getId());
 
-        updateOptions(view);
+        updateOptions();
     }
 
     public void deleteEmployee (View view) {
@@ -157,18 +207,23 @@ public class AdminActivity extends AppCompatActivity {
             return;
         }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
-        dbHandler.deleteAccount(selectedEmployee.getUsername(),selectedEmployee.getPassword());
+        dbHandler.deleteEmployee(selectedEmployee.getUsername(),selectedEmployee.getPassword());
 
         ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
                 android.R.layout.simple_spinner_dropdown_item, dbHandler.getEmployeeList());
         spinnerEmployee.setAdapter(adapter);
 
         selectedEmployee=null;
-        updateOptions(view);
+        updateOptions();
 
     }
 
-    public void updateOptions(View view){
+    public void updateOptions(){
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        ArrayAdapter<Service> serviceArrayAdapter = new ArrayAdapter<Service>(this,
+                android.R.layout.simple_spinner_dropdown_item, dbHandler.getAllServices());
+        spinnerViewService.setAdapter(serviceArrayAdapter);
+
         if(selectedEmployee==null){
             String[] emptyList = new String[0];
             Arrays.fill(emptyList, null);
@@ -179,8 +234,6 @@ public class AdminActivity extends AppCompatActivity {
             return;
         }
 
-
-        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         ArrayList<Service> all= dbHandler.getAllServices();
 
         ArrayList<String[]> offerings = dbHandler.findOfferings(selectedEmployee.getUsername());
@@ -207,5 +260,38 @@ public class AdminActivity extends AppCompatActivity {
         spinnerAvailable.setAdapter(availableAdapter);
     }
 
+    public void viewService(View view){
+        if (spinnerViewService.getSelectedItem()==null){
+            textDisplay.setText("Select a service to view");
+            return;
+        }
+
+        Intent serviceIntent = new Intent(this, ServiceActivity.class);
+        Service service = (Service) spinnerViewService.getSelectedItem();
+        serviceIntent.putExtra("serviceName", service.getName());
+        startActivity(serviceIntent);
+    }
+
+    public void deleteSelectService(View view){
+        if (spinnerViewService.getSelectedItem()==null){
+            textDisplay.setText("Select a service to view");
+            return;
+        }
+
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        Service selected = (Service) spinnerViewService.getSelectedItem();
+        dbHandler.deleteService(selected.getName());
+
+        ArrayAdapter<Service> serviceArrayAdapter = new ArrayAdapter<Service>(this,
+                android.R.layout.simple_spinner_dropdown_item, dbHandler.getAllServices());
+        spinnerViewService.setAdapter(serviceArrayAdapter);
+        updateOptions();
+    }
+
+    public void createService(View view) {
+
+        Intent editServiceIntent = new Intent(this, EditServiceActivity.class);
+        startActivity(editServiceIntent);
+    }
 
 }

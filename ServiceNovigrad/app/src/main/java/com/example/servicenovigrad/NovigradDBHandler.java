@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.servicenovigrad.services.DocumentHandler;
 import com.example.servicenovigrad.services.DocumentTemplate;
@@ -19,7 +22,7 @@ import com.example.servicenovigrad.userManagement.UserAccount;
 import java.util.ArrayList;
 
 public class NovigradDBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     //Class Variables
     private static final String DATABASE_NAME = "novigradDB.db";
@@ -31,6 +34,7 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         AccountHandler.createAccounts(db);
+        AccountHandler.createEmployeeDetails(db);
         DocumentHandler.createDocuments(db);
         FieldHandler.createFields(db);
         ServiceHandler.createServices(db);
@@ -55,6 +59,8 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         ServiceHandler.createInformation(db);
         db.execSQL("DROP TABLE IF EXISTS " + ServiceHandler.TABLE_OFFERINGS);
         ServiceHandler.createOfferings(db);
+        db.execSQL("DROP TABLE IF EXISTS " + AccountHandler.TABLE_DETAILS);
+        AccountHandler.createEmployeeDetails(db);
     }
 
     public void addAccount(UserAccount ua){
@@ -195,6 +201,29 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         return result;
     }
 
+    public boolean deleteAllOfferings(String username){
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "Select * FROM " + ServiceHandler.TABLE_OFFERINGS + " WHERE " +
+                AccountHandler.COLUMN_USERNAME+ " = \""+ username + "\"";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            db.delete(ServiceHandler.TABLE_OFFERINGS, AccountHandler.COLUMN_USERNAME +
+                    " = \""+ username + "\"", null);
+            result = true;
+        }
+
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+    public boolean deleteEmployee(String username, String password){
+        deleteAllOfferings(username);
+        return deleteAccount(username,password);
+    }
+
+
     public ArrayList<Service> getAllServices(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "Select * FROM " + ServiceHandler.TABLE_SERVICES;
@@ -209,5 +238,175 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return als;
+    }
+
+    public void addInformation(int serviceId, int fieldId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ServiceHandler.SERVICE_COLUMN_ID, serviceId);
+        values.put(FieldHandler.COLUMN_ID, fieldId);
+        db.insert(ServiceHandler.TABLE_INFORMATION, null, values);
+        db.close();
+    }
+
+    public ArrayList<FieldTemplate> findAllInformation(String serviceName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<FieldTemplate> alf = new ArrayList<FieldTemplate>();
+        String query = "Select " + FieldHandler.TABLE_FIELDS + "." + FieldHandler.COLUMN_ID + ", " +
+                FieldHandler.TABLE_FIELDS + "." + FieldHandler.COLUMN_NAME + ", " +
+                FieldHandler.TABLE_FIELDS + "." + FieldHandler.COLUMN_TYPE +
+                " FROM ((" + ServiceHandler.TABLE_INFORMATION +
+
+                " LEFT JOIN " + ServiceHandler.TABLE_SERVICES +
+                " ON " + ServiceHandler.TABLE_INFORMATION + "." + ServiceHandler.SERVICE_COLUMN_ID + " = " +
+                ServiceHandler.TABLE_SERVICES + "." + ServiceHandler.SERVICE_COLUMN_ID+ ")" +
+
+                " LEFT JOIN " + FieldHandler.TABLE_FIELDS +
+                " ON " + ServiceHandler.TABLE_INFORMATION + "." + FieldHandler.COLUMN_ID + " = " +
+                FieldHandler.TABLE_FIELDS + "." + FieldHandler.COLUMN_ID + ")" +
+
+                " WHERE " +  ServiceHandler.TABLE_SERVICES + "." + ServiceHandler.SERVICE_COLUMN_NAME+
+                " = \""+ serviceName+ "\"";
+        Cursor cursor = db.rawQuery(query, null);
+        while (cursor.moveToNext()) {
+            alf.add(new FieldTemplate(cursor.getInt(0),cursor.getString(1),
+                    cursor.getString(2)));
+        }
+
+        cursor.close();
+        db.close();
+        return alf;
+    }
+
+    public boolean deleteInformation(int serviceID, int fieldID){
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "Select * FROM " + ServiceHandler.TABLE_INFORMATION + " WHERE " +
+                ServiceHandler.SERVICE_COLUMN_ID+ " = "+ String.valueOf(serviceID) + " AND " +
+                FieldHandler.COLUMN_ID+ " = "+ String.valueOf(fieldID);
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            db.delete(ServiceHandler.TABLE_INFORMATION, ServiceHandler.SERVICE_COLUMN_ID+ " = "+
+                    String.valueOf(serviceID) + " AND " +
+                    FieldHandler.COLUMN_ID+ " = "+ String.valueOf(fieldID), null);
+            result = true;
+        }
+
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+    public void addRequirements(int serviceId, int docId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ServiceHandler.SERVICE_COLUMN_ID, serviceId);
+        values.put(DocumentHandler.COLUMN_ID, docId);
+        db.insert(ServiceHandler.TABLE_REQUIREMENTS, null, values);
+        db.close();
+    }
+
+    public ArrayList<DocumentTemplate> findAllRequirements(String serviceName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<DocumentTemplate> ald = new ArrayList<DocumentTemplate>();
+        String query = "Select " + DocumentHandler.TABLE_DOCUMENTS + "." + DocumentHandler.COLUMN_ID + ", " +
+                DocumentHandler.TABLE_DOCUMENTS + "." + DocumentHandler.COLUMN_NAME + ", " +
+                DocumentHandler.TABLE_DOCUMENTS + "." + DocumentHandler.COLUMN_DESCRIPTION +
+                " FROM ((" + ServiceHandler.TABLE_REQUIREMENTS +
+
+                " LEFT JOIN " + ServiceHandler.TABLE_SERVICES +
+                " ON " + ServiceHandler.TABLE_REQUIREMENTS + "." + ServiceHandler.SERVICE_COLUMN_ID + " = " +
+                ServiceHandler.TABLE_SERVICES + "." + ServiceHandler.SERVICE_COLUMN_ID+ ")" +
+
+                " LEFT JOIN " + DocumentHandler.TABLE_DOCUMENTS +
+                " ON " + ServiceHandler.TABLE_REQUIREMENTS + "." + DocumentHandler.COLUMN_ID + " = " +
+                DocumentHandler.TABLE_DOCUMENTS + "." + DocumentHandler.COLUMN_ID + ")" +
+
+                " WHERE " +  ServiceHandler.TABLE_SERVICES + "." + ServiceHandler.SERVICE_COLUMN_NAME+
+                " = \""+ serviceName+ "\"";
+        Cursor cursor = db.rawQuery(query, null);
+        while (cursor.moveToNext()) {
+            ald.add(new DocumentTemplate(cursor.getInt(0), cursor.getString(1),
+                    cursor.getString(2)));
+        }
+
+        cursor.close();
+        db.close();
+        return ald;
+    }
+
+    public boolean deleteRequirements(int serviceID, int docID){
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "Select * FROM " + ServiceHandler.TABLE_REQUIREMENTS + " WHERE " +
+                ServiceHandler.SERVICE_COLUMN_ID+ " = "+ String.valueOf(serviceID) + " AND " +
+                DocumentHandler.COLUMN_ID+ " = "+ String.valueOf(docID);
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            db.delete(ServiceHandler.TABLE_REQUIREMENTS, ServiceHandler.SERVICE_COLUMN_ID+ " = "+
+                    String.valueOf(serviceID) + " AND " +
+                    DocumentHandler.COLUMN_ID+ " = "+ String.valueOf(docID), null);
+            result = true;
+        }
+
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+    public ArrayList<DocumentTemplate> getAllDocuments(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "Select * FROM " + DocumentHandler.TABLE_DOCUMENTS;
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList<DocumentTemplate> ald = new ArrayList<DocumentTemplate>();
+        DocumentTemplate dt;
+
+        while (cursor.moveToNext()){
+            dt=new DocumentTemplate(cursor.getInt(0),
+                    cursor.getString(1),cursor.getString(2));
+            ald.add(dt);
+        }
+        cursor.close();
+        db.close();
+        return ald;
+    }
+
+    public ArrayList<FieldTemplate> getAllFields(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "Select * FROM " + FieldHandler.TABLE_FIELDS;
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList<FieldTemplate> alf = new ArrayList<FieldTemplate>();
+        FieldTemplate ft;
+
+        while (cursor.moveToNext()){
+            ft=new FieldTemplate(cursor.getInt(0),
+                    cursor.getString(1),cursor.getString(2));
+            alf.add(ft);
+        }
+        cursor.close();
+        db.close();
+        return alf;
+    }
+
+    public void updateOffering(String username, int serviceId, boolean isProvided){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        int intIsProvided = isProvided ? 1 : 0;
+        values.put(ServiceHandler.OFFERING_COLUMN_IS_PROV, intIsProvided);
+        db.update(ServiceHandler.TABLE_OFFERINGS,values,AccountHandler.COLUMN_USERNAME+ " = \""+
+                username + "\"" + " AND " + ServiceHandler.SERVICE_COLUMN_ID+ " = "+
+                String.valueOf(serviceId), null);
+
+        db.close();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public boolean fillEmployeeWithData(Employee employee){
+        return AccountHandler.fillEmployeeWithData(this,employee);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void updateDataFromEmployee(Employee employee){
+        AccountHandler.updateDataFromEmployee(this,employee);
     }
 }

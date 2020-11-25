@@ -3,9 +3,14 @@ package com.example.servicenovigrad.userManagement;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.servicenovigrad.NovigradDBHandler;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class AccountHandler{
@@ -17,6 +22,14 @@ public class AccountHandler{
     public static final String COLUMN_LASTNAME = "lastName";
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_ROLE = "role";
+    public static final String TABLE_DETAILS = "employeeDetails";
+    public static final String COLUMN_OPENTIME = "openTime";
+    public static final String COLUMN_CLOSETIME = "closeTime";
+    public static final String COLUMN_WORKDAYS = "workdays";
+    public static String DEFAULT_WORKDAYS = "1111100";
+    public static String DEFAULT_OPENTIME = "09:00";
+    public static String DEFAULT_CLOSETIME = "17:00";
+
 
     public static void createAccounts(SQLiteDatabase db) {
         String CREATE_ACCOUNTS_TABLE = "CREATE TABLE " +
@@ -34,6 +47,16 @@ public class AccountHandler{
         values.put(COLUMN_PASSWORD, "onePunch");
         values.put(COLUMN_ROLE, "Admin");
         db.insert(TABLE_ACCOUNTS, null, values);
+    }
+
+    public static void createEmployeeDetails(SQLiteDatabase db) {
+        String CREATE_ACCOUNTS_TABLE = "CREATE TABLE " +
+                TABLE_DETAILS + "(" +
+                COLUMN_USERNAME + " TEXT PRIMARY KEY," +
+                COLUMN_OPENTIME + " TEXT NOT NULL DEFAULT \""+DEFAULT_OPENTIME +"\","+
+                COLUMN_CLOSETIME + " TEXT NOT NULL DEFAULT \""+DEFAULT_CLOSETIME +"\","+
+                COLUMN_WORKDAYS + " TEXT NOT NULL DEFAULT \""+DEFAULT_WORKDAYS +"\")";
+        db.execSQL(CREATE_ACCOUNTS_TABLE);
     }
 
     public static void addAccount(NovigradDBHandler ndh, UserAccount ua){
@@ -132,5 +155,48 @@ public class AccountHandler{
         cursor.close();
         db.close();
         return result;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static boolean fillEmployeeWithData(NovigradDBHandler ndh, Employee emp){
+        boolean result=false;
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_DETAILS + " WHERE " +
+                COLUMN_USERNAME+ " = \""+ emp.getUsername() + "\"";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            emp.setStartTime(LocalTime.from(DateTimeFormatter.ISO_TIME.parse(cursor.getString(1))));
+            emp.setEndTime(LocalTime.from(DateTimeFormatter.ISO_TIME.parse(cursor.getString(2))));
+            emp.setWorkdays(Workday.parseWorkdays(cursor.getString(3)));
+            result=true;
+        }
+        else{
+            emp.setStartTime(LocalTime.from(DateTimeFormatter.ISO_TIME.parse(DEFAULT_OPENTIME)));
+            emp.setEndTime(LocalTime.from(DateTimeFormatter.ISO_TIME.parse(DEFAULT_CLOSETIME)));
+            emp.setWorkdays(Workday.parseWorkdays(DEFAULT_WORKDAYS));
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void updateDataFromEmployee(NovigradDBHandler ndh, Employee emp){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_OPENTIME,DateTimeFormatter.ISO_TIME.format(emp.getStartTime()));
+        values.put(COLUMN_CLOSETIME,DateTimeFormatter.ISO_TIME.format(emp.getEndTime()));
+        values.put(COLUMN_WORKDAYS,Workday.toCompressedString(emp.getWorkdays()));
+        String query = "Select * FROM " + TABLE_DETAILS + " WHERE " +
+                COLUMN_USERNAME+ " = \""+ emp.getUsername() + "\"";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            db.update(TABLE_DETAILS, values,
+                    COLUMN_USERNAME + " = \"" + emp.getUsername() + "\"", null);
+        }
+        else{
+            values.put(COLUMN_USERNAME, emp.getUsername());
+            db.insert(TABLE_DETAILS,null,values);
+        }
     }
 }

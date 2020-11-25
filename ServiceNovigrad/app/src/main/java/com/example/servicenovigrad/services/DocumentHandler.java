@@ -23,13 +23,13 @@ public class DocumentHandler{
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, "Proof Of Residence");
-        values.put(COLUMN_DESCRIPTION, "An image of a bank statement or hydro bill that\n" +
+        values.put(COLUMN_DESCRIPTION, "An image of a bank statement or hydro bill that" +
                 "shows the address");
         db.insert(TABLE_DOCUMENTS, null, values);
 
         values = new ContentValues();
         values.put(COLUMN_NAME, "Proof Of Status");
-        values.put(COLUMN_DESCRIPTION, "An image of a Canadian permanent resident\n" +
+        values.put(COLUMN_DESCRIPTION, "An image of a Canadian permanent resident" +
                 "card or a Canadian passport");
         db.insert(TABLE_DOCUMENTS, null, values);
 

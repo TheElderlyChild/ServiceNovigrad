@@ -33,7 +33,7 @@ public abstract class UserAccount {
     }
 
     public String toString(){return user.getUsername() +
-            "("+user.getFirstName()+" "+user.getLastName()+")";}
+            " ("+user.getFirstName()+" "+user.getLastName()+")";}
 
     public boolean isAccount(String username, String password){
         return (username.equals(getUsername()) && user.isPassword(password));

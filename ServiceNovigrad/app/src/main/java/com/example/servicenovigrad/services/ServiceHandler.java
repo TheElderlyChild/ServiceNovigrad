@@ -167,8 +167,8 @@ public class ServiceHandler{
 
 
     public static void addService(NovigradDBHandler ndh, Service service){
+        ndh.deleteService(service.getName());
         SQLiteDatabase db = ndh.getWritableDatabase();
-        deleteService(ndh, service.getName());
 
         ContentValues values = new ContentValues();
         values.put(SERVICE_COLUMN_NAME, service.getName());
@@ -180,7 +180,7 @@ public class ServiceHandler{
         String query = "Select * FROM " + TABLE_SERVICES + " WHERE " +
                 SERVICE_COLUMN_NAME+ " = \""+ service.getName() + "\"";
         Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToLast()) {
+        if (cursor.moveToFirst()) {
             serviceId = cursor.getInt(0);
         }
         else{
@@ -201,8 +201,8 @@ public class ServiceHandler{
         }
 
         for (FieldTemplate field : service.getInformation()){
-            query = "Select * FROM " + DocumentHandler.TABLE_DOCUMENTS + " WHERE " +
-                    DocumentHandler.COLUMN_NAME+ " = \""+ field.getName() + "\"";
+            query = "Select * FROM " + FieldHandler.TABLE_FIELDS + " WHERE " +
+                    FieldHandler.COLUMN_NAME+ " = \""+ field.getName() + "\"";
             cursor = db.rawQuery(query, null);
             if (cursor.moveToNext()) {
                 fieldId = cursor.getInt(0);
@@ -296,7 +296,7 @@ public class ServiceHandler{
             db.delete(TABLE_SERVICES, SERVICE_COLUMN_NAME + " = \""+ nameStr + "\"", null);
             db.delete(TABLE_REQUIREMENTS, SERVICE_COLUMN_ID + " = " + serviceID, null);
             db.delete(TABLE_INFORMATION, SERVICE_COLUMN_ID + " = " + serviceID, null);
-            db.delete(TABLE_OFFERINGS, SERVICE_COLUMN_ID + " = \""+ serviceID + "\"", null);
+            db.delete(TABLE_OFFERINGS, SERVICE_COLUMN_ID + " = "+ serviceID, null);
             result = true;
         }
 
