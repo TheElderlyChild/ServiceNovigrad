@@ -1,0 +1,366 @@
+class Service {
+  int id;
+  String name;
+  ArrayList<DocumentTemplate> requirements;
+  ArrayList<FieldTemplate> information;
+  public Service(int id, String name, ArrayList<DocumentTemplate> requirements,
+                   ArrayList<FieldTemplate> information) {
+        this.id = id;
+        this.name = name;
+        this.requirements = requirements;
+        this.information = information;
+    }
+
+    public Service(String name, ArrayList<DocumentTemplate> requirements,
+                   ArrayList<FieldTemplate> information) {
+        this.name = name;
+        this.requirements = requirements;
+        this.information = information;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ArrayList<DocumentTemplate> getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(ArrayList<DocumentTemplate> requirements) {
+        this.requirements = requirements;
+    }
+
+    public ArrayList<FieldTemplate> getInformation() {
+        return information;
+    }
+
+    public void setInformation(ArrayList<FieldTemplate> information) {
+        this.information = information;
+    }
+public int getID(){
+
+}
+public String getName(){
+
+}
+public void setName(){
+
+}
+}
+class user {
+    String firstName;
+    String lastName;
+    String username;
+    String password;
+
+    public boolean isPassword(String value){
+        return value.equals(password);
+    }
+public String getUsername(){
+
+}
+public String getUserName(){
+
+}
+public String getFirstName(){
+
+}
+public String getLastName(){
+
+}
+public String getPassword(){
+
+}
+public String getFirstName(){
+
+}
+}
+class customer{
+  user User;
+  isA user;
+  1 -- * serviceRating;
+  1 -- * purchaseService;
+  1 -- * search;
+}
+class admin{
+  isA user;
+  user User;
+   public void removeServiceFromEmployee (View view) {
+        if(selectedEmployee==null){
+            textDisplay.setText("You need to select an Employee");
+            return;
+        }
+        if (spinnerChosen.getSelectedItem()==null){
+            textDisplay.setText("Choose a Service to Remove");
+            return;
+        }
+
+        Service selService= (Service) spinnerChosen.getSelectedItem();
+
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.deleteOffering(selectedEmployee.getUsername(),
+                selService.getId());
+
+        updateOptions();
+    }
+
+    public void deleteEmployee (View view) {
+        if (selectedEmployee==null){
+            textDisplay.setText("Choose an Employee");
+            return;
+        }
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.deleteEmployee(selectedEmployee.getUsername(),selectedEmployee.getPassword());
+
+        ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
+                android.R.layout.simple_spinner_dropdown_item, dbHandler.getEmployeeList());
+        spinnerEmployee.setAdapter(adapter);
+
+        selectedEmployee=null;
+        updateOptions();
+
+    }
+
+    public void updateOptions(){
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        ArrayAdapter<Service> serviceArrayAdapter = new ArrayAdapter<Service>(this,
+                android.R.layout.simple_spinner_dropdown_item, dbHandler.getAllServices());
+        spinnerViewService.setAdapter(serviceArrayAdapter);
+
+        if(selectedEmployee==null){
+            String[] emptyList = new String[0];
+            Arrays.fill(emptyList, null);
+            ArrayAdapter emptyAdapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_item, emptyList);
+            spinnerAvailable.setAdapter(emptyAdapter);
+            spinnerChosen.setAdapter(emptyAdapter);
+            return;
+        }
+
+        ArrayList<Service> all= dbHandler.getAllServices();
+
+        ArrayList<String[]> offerings = dbHandler.findOfferings(selectedEmployee.getUsername());
+        ArrayList<Service> offered = new ArrayList<Service>();
+        ArrayList<Service> available = new ArrayList<Service>();
+
+
+        for (Service service : all){
+            boolean isInOfferings=false;
+            for (String[] offering : offerings){
+                if (service.getName().equals(offering[0])){isInOfferings=true;}
+            }
+            if(isInOfferings){ offered.add(service); }
+            else{available.add(service);}
+        }
+
+        ArrayAdapter<Service> chosenAdapter = new ArrayAdapter<Service>(this,
+                android.R.layout.simple_spinner_dropdown_item, offered);
+
+        spinnerChosen.setAdapter(chosenAdapter);
+
+        ArrayAdapter<Service> availableAdapter = new ArrayAdapter<Service>(this,
+                android.R.layout.simple_spinner_dropdown_item, available);
+        spinnerAvailable.setAdapter(availableAdapter);
+    }
+
+    public void viewService(View view){
+        if (spinnerViewService.getSelectedItem()==null){
+            textDisplay.setText("Select a service to view");
+            return;
+        }
+
+        Intent serviceIntent = new Intent(this, ServiceActivity.class);
+        Service service = (Service) spinnerViewService.getSelectedItem();
+        serviceIntent.putExtra("serviceName", service.getName());
+        startActivity(serviceIntent);
+    }
+
+    public void deleteSelectService(View view){
+        if (spinnerViewService.getSelectedItem()==null){
+            textDisplay.setText("Select a service to view");
+            return;
+        }
+
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        Service selected = (Service) spinnerViewService.getSelectedItem();
+        dbHandler.deleteService(selected.getName());
+
+        ArrayAdapter<Service> serviceArrayAdapter = new ArrayAdapter<Service>(this,
+                android.R.layout.simple_spinner_dropdown_item, dbHandler.getAllServices());
+        spinnerViewService.setAdapter(serviceArrayAdapter);
+        updateOptions();
+    }
+
+    public void createService(View view) {
+
+        Intent editServiceIntent = new Intent(this, EditServiceActivity.class);
+        startActivity(editServiceIntent);
+    }
+  public void addServiceToEmployee (View view) {
+        if(selectedEmployee==null){
+            textDisplay.setText("You need to select an Employee");
+            return;
+        }
+        if (spinnerAvailable.getSelectedItem()==null){
+            textDisplay.setText("Choose a Service to Add");
+            return;
+        }
+
+        Service selService= (Service) spinnerAvailable.getSelectedItem();
+
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.addOffering(selectedEmployee.getUsername(),
+                selService.getId());
+
+        updateOptions();
+    }
+
+  }
+class employee{
+    isA user;
+    LocalTime startTime;
+    LocalTime endTime;
+  public Employee(User user){
+        this.user=user;
+    }
+
+    @Override
+    public String getRole() {
+        return "Employee";
+    }
+
+    public LocalTime getStartTime(){return startTime;}
+    public LocalTime getEndTime(){return endTime;}
+    public void setStartTime(LocalTime newTime){startTime=newTime;}
+    public void setEndTime(LocalTime newTime){endTime=newTime;}
+  public LocalTime getStartTime(){
+
+}
+* -- * Workday;
+}
+class branch{
+  String address;
+  double rating;
+  Service services;
+  public double averageRating(){
+    public void setAddress(String address){}
+}
+1 -- 1 employee;
+}
+class Workday{
+    int day;
+    boolean available;
+
+    public Workday(int day, boolean available){
+        this.day=day;
+        this.available=available;
+    }
+  public void setDay(int day) {
+        this.day = day;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    }
+class serviceRating{
+ Service services;
+ double rating;
+public void getRating(Service specificService){
+
+}
+public void setRating(){
+
+}
+}
+class search{
+public double getRating(String address){
+}
+  public String getAddress(){}
+  public String[] workTime(){}
+}
+class purchaseService {
+Service services;
+  public double price(Service Type){}
+  public String documents(Service Type){}
+  }
+//$?[End_of_model]$?
+
+namespace -;
+
+
+class Service
+{
+  position 439 21 330 197;
+  position.association Service__branch 0,58 138,46;
+  position.association Service__branch 0,54 138,49;
+}
+
+class customer
+{
+  position 613 429 109 95;
+  position.association customer__serviceRating 83,58 30,0;
+  position.association customer__purchaseService 164,32 0,41;
+  position.association customer__search 124,95 25,0;
+}
+
+class admin
+{
+  position 21 365 109 41;
+  }
+
+class employee
+{
+  position 374 388 185 129;
+  position.association employee__workday 123,0 0,5;
+  position.association Workday__employee 131,0 19,180;
+}
+
+class user
+{
+  position 187 72 228 163;
+}
+
+class branch
+{
+  position 136 626 203 129;
+  position.association branch__employee 47,0 0,29;
+  position.association Service__branch 138,56 0,49;
+}
+
+class serviceRating
+{
+  position 531 648 203 112;
+}
+
+class search
+{
+  position 751 613 195 78;
+}
+
+class purchaseService
+{
+  position 948 456 109 112;
+}
+
+class Workday
+{
+  position 677 164 109 180;
+}
