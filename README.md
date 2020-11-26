@@ -14,3 +14,5 @@ Current Members are: Wyse Ebbah, Kian Mozefarian.
 
 Delay in Submission of Deliverable 2/3 is due to the restructure of the group, as members
 left close to the deadline without contibuting. 
+
+Minimum API: API 26. However, apart from the Employee Activity, all other activities have Minimum API 16.
