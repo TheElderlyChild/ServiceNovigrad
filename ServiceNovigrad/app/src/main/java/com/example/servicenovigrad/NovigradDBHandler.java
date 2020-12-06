@@ -23,7 +23,7 @@ import com.example.servicenovigrad.userManagement.UserAccount;
 import java.util.ArrayList;
 
 public class NovigradDBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     //Class Variables
     private static final String DATABASE_NAME = "novigradDB.db";
@@ -36,6 +36,7 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         AccountHandler.createAccounts(db);
         AccountHandler.createEmployeeDetails(db);
+        AccountHandler.createEmployeeRatings(db);
         DocumentHandler.createDocuments(db);
         FieldHandler.createFields(db);
         ServiceHandler.createServices(db);
@@ -71,6 +72,9 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         ServiceHandler.createRequestDocuments(db);
         db.execSQL("DROP TABLE IF EXISTS " + ServiceHandler.TABLE_REQUEST_FIELD);
         ServiceHandler.createRequestFields(db);
+        db.execSQL("DROP TABLE IF EXISTS " + AccountHandler.TABLE_RATINGS);
+        AccountHandler.createEmployeeRatings(db);
+
     }
 
     public void addAccount(UserAccount ua){
@@ -451,5 +455,17 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
 
     public void makeServiceRequest(ServiceRequest request) {
         ServiceHandler.makeServiceRequest(this, request);
+    }
+
+    public void addRating(String employeeName, String customerName, float rating){
+        AccountHandler.addRating(this,employeeName,customerName,rating);
+    }
+
+    public float findRating(String employeeName, String customerName){
+        return AccountHandler.findRating(this,employeeName,customerName);
+    }
+
+    public float findAverageRating(String employeeName){
+        return AccountHandler.findAverageRating(this,employeeName);
     }
 }

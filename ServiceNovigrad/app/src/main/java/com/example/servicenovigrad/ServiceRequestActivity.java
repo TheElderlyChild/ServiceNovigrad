@@ -114,6 +114,9 @@ public class ServiceRequestActivity extends AppCompatActivity {
     }
 
     public void viewInfo(){
+        if(chosenRequest==null){
+            return;
+        }
         Intent viewIntent = new Intent(this, ViewRequestActivity.class);
         viewIntent.putExtra("requestId", chosenRequest.getId());
         startActivity(viewIntent);

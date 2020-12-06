@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -30,9 +31,10 @@ import java.util.Calendar;
 
 public class CustomerActivity extends AppCompatActivity {
 
-    Button btnSearchWorkHour, btnSearchService, btnTimePicker, btnSelectBranch, btnChooseService, btnMakeRequest;
+    Button btnSearchWorkHour, btnSearchService, btnTimePicker, btnSelectBranch, btnChooseService, btnMakeRequest, btnRate;
     Spinner spinnerSearchService, spinnerWeekday, spinnerChooseBranch, spinnerChooseService;
     TextView displayBranch;
+    RatingBar branchRating;
     TimePickerDialog.OnTimeSetListener mOnTimeSetListener;
     Customer currentAccount;
     Employee selectedEmployee;
@@ -50,11 +52,13 @@ public class CustomerActivity extends AppCompatActivity {
         btnSelectBranch=(Button) findViewById(R.id.btnSelectBranch);
         btnChooseService=(Button) findViewById(R.id.btnChooseService);
         btnMakeRequest=(Button) findViewById(R.id.btnMakeRequest);
+        btnRate=(Button) findViewById(R.id.btnRate);
         displayBranch=(TextView) findViewById(R.id.displayBranch);
         spinnerSearchService=(Spinner) findViewById(R.id.spinnerSearchService);
         spinnerChooseBranch=(Spinner) findViewById(R.id.spinnerChooseBranch);
         spinnerChooseService=(Spinner) findViewById(R.id.spinnerChooseService);
         spinnerWeekday=(Spinner) findViewById(R.id.spinnerWeekday);
+        branchRating=(RatingBar) findViewById(R.id.branchRating);
 
         Intent intent = getIntent();
 
@@ -174,6 +178,17 @@ public class CustomerActivity extends AppCompatActivity {
             }
         });
 
+        btnRate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    makeRating();
+                }
+                catch(Exception e){
+                    displayBranch.setText(e.toString());
+                }
+            }
+        });
     }
 
     public String requestAlert(){
@@ -208,6 +223,7 @@ public class CustomerActivity extends AppCompatActivity {
         if (spinnerChooseBranch.getSelectedItem()==null){return;}
         selectedEmployee = (Employee) spinnerChooseBranch.getSelectedItem();
         updateBranchOptions();
+        updateRating();
     }
 
     public void selectService(){
@@ -275,12 +291,6 @@ public class CustomerActivity extends AppCompatActivity {
             spinnerChooseBranch.setAdapter(adapter);
         }
 
-
-
-
-
-
-
     }
 
     public void updateBranchOptions(){
@@ -321,5 +331,19 @@ public class CustomerActivity extends AppCompatActivity {
         intent.putExtra("branchUsername", selectedEmployee.getUsername());
         intent.putExtra("branchPassword", selectedEmployee.getPassword());
         startActivity(intent);
+    }
+
+    public void updateRating(){
+        if(selectedEmployee==null){return;}
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        branchRating.setRating(dbHandler.findRating(selectedEmployee.getUsername(),currentAccount.getUsername()));
+        displayBranch.setText(selectedEmployee.toString()+" "+
+                String.valueOf(dbHandler.findAverageRating(selectedEmployee.getUsername())));
+    }
+
+    public void makeRating(){
+        if(selectedEmployee==null){return;}
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.addRating(selectedEmployee.getUsername(),currentAccount.getUsername(),branchRating.getRating());
     }
 }

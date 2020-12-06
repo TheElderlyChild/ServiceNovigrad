@@ -26,6 +26,10 @@ public class AccountHandler{
     public static final String COLUMN_OPENTIME = "openTime";
     public static final String COLUMN_CLOSETIME = "closeTime";
     public static final String COLUMN_WORKDAYS = "workdays";
+    public static final String TABLE_RATINGS = "ratings";
+    public static final String COLUMN_EMPLOYEE_USERNAME = "_empUsername";
+    public static final String COLUMN_CUSTOMER_USERNAME = "_customerUsername";
+    public static final String COLUMN_RATING = "rating";
     public static String DEFAULT_WORKDAYS = "1111100";
     public static String DEFAULT_OPENTIME = "09:00";
     public static String DEFAULT_CLOSETIME = "17:00";
@@ -57,6 +61,15 @@ public class AccountHandler{
                 COLUMN_CLOSETIME + " TEXT NOT NULL DEFAULT \""+DEFAULT_CLOSETIME +"\","+
                 COLUMN_WORKDAYS + " TEXT NOT NULL DEFAULT \""+DEFAULT_WORKDAYS +"\")";
         db.execSQL(CREATE_ACCOUNTS_TABLE);
+    }
+
+    public static void createEmployeeRatings(SQLiteDatabase db) {
+        String CREATE_RATINGS_TABLE = "CREATE TABLE " +
+                TABLE_RATINGS + "(" +
+                COLUMN_EMPLOYEE_USERNAME + " TEXT NOT NULL, " +
+                COLUMN_CUSTOMER_USERNAME + " TEXT NOT NULL, "+
+                COLUMN_RATING + " FLOAT NOT NULL"+")";
+        db.execSQL(CREATE_RATINGS_TABLE);
     }
 
     public static void addAccount(NovigradDBHandler ndh, UserAccount ua){
@@ -199,5 +212,66 @@ public class AccountHandler{
             values.put(COLUMN_USERNAME, emp.getUsername());
             db.insert(TABLE_DETAILS,null,values);
         }
+    }
+
+    public static void addRating(NovigradDBHandler ndh, String employeeName, String customerName, float rating){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_RATINGS +
+                " WHERE " + COLUMN_EMPLOYEE_USERNAME+ " = \""+ employeeName+"\"" +
+                " AND " + COLUMN_CUSTOMER_USERNAME+ " = \""+ customerName+"\"";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            db.delete(TABLE_RATINGS, COLUMN_EMPLOYEE_USERNAME+ " = \""+ employeeName+"\"" +
+                            " AND " + COLUMN_CUSTOMER_USERNAME+ " = \""+ customerName+"\"", null);
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_EMPLOYEE_USERNAME,employeeName);
+        values.put(COLUMN_CUSTOMER_USERNAME,customerName);
+        values.put(COLUMN_RATING,rating);
+        db.insert(TABLE_RATINGS, null, values);
+        cursor.close();
+        db.close();
+    }
+
+    public static float findRating(NovigradDBHandler ndh, String employeeName, String customerName){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        float result=0;
+
+        String query = "Select * FROM " + TABLE_RATINGS +
+                " WHERE " + COLUMN_EMPLOYEE_USERNAME+ " = \""+ employeeName+"\"" +
+                " AND " + COLUMN_CUSTOMER_USERNAME+ " = \""+ customerName+"\"";
+
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            result=cursor.getFloat(2);
+        }
+
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+    public static float findAverageRating(NovigradDBHandler ndh, String employeeName){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        float value = 0;
+        int count = 0;
+
+        String query = "Select * FROM " + TABLE_RATINGS +
+                " WHERE " + COLUMN_EMPLOYEE_USERNAME+ " = \""+ employeeName+"\"";
+
+        Cursor cursor = db.rawQuery(query, null);
+        while (cursor.moveToNext()){
+            value+=cursor.getFloat(2);
+            count+=1;
+        }
+
+        if(count==0){return 0;}
+
+        value=value/count;
+
+        cursor.close();
+        db.close();
+        return value;
     }
 }
