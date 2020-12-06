@@ -3,6 +3,7 @@ package com.example.servicenovigrad;
 import com.example.servicenovigrad.services.DocumentTemplate;
 import com.example.servicenovigrad.services.FieldTemplate;
 import com.example.servicenovigrad.services.Service;
+import com.example.servicenovigrad.services.ServiceRequest;
 import com.example.servicenovigrad.userManagement.Admin;
 import com.example.servicenovigrad.userManagement.Customer;
 import com.example.servicenovigrad.userManagement.Employee;
@@ -69,4 +70,66 @@ public class ObjectManipulationTests {
         }
         assertEquals(values, Workday.toCompressedString(alw));
     }
+
+    @Test
+    public void checkValidateField() {
+        String input;
+        String type;
+        String result="";
+
+        input="Woohoo";
+        type="TEXT";
+        result+=(InputValidator.validateField(input,type)?"T":"F");
+        input="2020-12-06";
+        result+=(InputValidator.validateField(input,type)?"T":"F");
+
+        input="2020-12-06";
+        type="DATE";
+        result+=(InputValidator.validateField(input,type)?"T":"F");
+        input="Woohoo";
+        result+=(InputValidator.validateField(input,type)?"T":"F");
+
+
+        input="35 Ghoulburn Crescent";
+        type="ADDRESS";
+        result+=(InputValidator.validateField(input,type)?"T":"F");
+        input="Woohoo";
+        result+=(InputValidator.validateField(input,type)?"T":"F");
+
+        assertEquals("TTTFTF", result);
+    }
+
+    @Test
+    public void checkServiceRequest() {
+        ServiceRequest result = new ServiceRequest(1,"Yoo","Hoo",
+                new Service(2,"wow",new ArrayList<DocumentTemplate>(), new ArrayList<FieldTemplate>()),-1);
+
+        assertEquals( "Request 1 by Hoo to Yoo for wow (rejected)", result.toString());
+    }
+
+    @Test
+    public void checkField() {
+        ServiceRequest.Field result = new ServiceRequest.Field(1,"Yoohoo");
+        assertEquals( "Field{fieldId=1, value='Yoohoo\'}", result.toString());
+    }
+
+    @Test
+    public void checkDocument() {
+        ServiceRequest.Document result = new ServiceRequest.Document(1,null);
+        assertEquals( "Document Of Document ID 1", result.toString());
+
+    }
+
+    @Test
+    public void checkCustomer() {
+        Customer customer=new Customer(new User("Wow","Yoo","Wow",null));
+        assertEquals( "Wow (Wow Yoo)", customer.toString());
+
+    }
+
+
+
+
+
+
 }
