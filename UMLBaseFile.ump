@@ -86,8 +86,12 @@ public String getFirstName(){
 class customer{
   user User;
   isA user;
+  public void fillWeekday(){}
+  public void fillServiceSearchBar(){}
+  public void selectBranch(){}
+  public void selectService(){}
+  public void makeRequest(){}
   1 -- * serviceRating;
-  1 -- * purchaseService;
   1 -- * search;
 }
 class admin{
@@ -296,71 +300,260 @@ public double getRating(String address){
   public String getAddress(){}
   public String[] workTime(){}
 }
-class purchaseService {
-Service services;
-  public double price(Service Type){}
-  public String documents(Service Type){}
-  }
-//$?[End_of_model]$?
 
-namespace -;
 
+
+class ServiceRequest
+{
+  String branchName;
+    String customerName;
+    Service service;
+    ArrayList<Document> Requirements;
+    ArrayList<Field> Information;
+    int approved;
+    private int docId;
+    private Bitmap value;
+  public ServiceRequest(int id, String branchID, String customerID, Service service, ArrayList<Document> requirements, ArrayList<Field> information, int approved){}
+  public Document(int docId, Bitmap value){}
+  public int getDocId(){}
+  public Bitmap getValue(){}
+  public Field(int fieldId, String value) {
+            this.fieldId = fieldId;
+            this.value = value;
+        }
+
+        public int getFieldId() {
+            return fieldId;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+  int id;
+
+      * -- * customer;
+public String getBranchName() {
+        return branchName;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+  
+    
+public int getID(){
+
+}
+
+public Service getService(){
+
+}
+}
+
+class ServiceHandler
+{
+    1 -- 1 ServiceRequest;
+  * -- * employee;
+public void updateRequestOptions(){
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        ArrayList<ServiceRequest> requests=dbHandler.findAllServiceRequests(currentAccount.getUsername());
+        displayText.setText(requests.toString());
+        ArrayAdapter<ServiceRequest> offeringAdapter = new ArrayAdapter<ServiceRequest>(this,
+                android.R.layout.simple_spinner_item, requests);
+        spinnerAvailableRequests.setAdapter(offeringAdapter);
+    }
+  public void approveRequest(View view){
+        if(chosenRequest==null){
+            return;
+        }
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.updateRequestApproval(chosenRequest.getId(), 1);
+    }
+  public void viewInfo(){
+        Intent viewIntent = new Intent(this, ViewRequestActivity.class);
+        viewIntent.putExtra("requestId", chosenRequest.getId());
+        startActivity(viewIntent);
+    }
+  public void rejectRequest(View view){
+        if(chosenRequest==null){
+            return;
+        }
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.updateRequestApproval(chosenRequest.getId(), -1);
+    }
+  public void selectRequest(View view){
+        if(spinnerAvailableRequests.getSelectedItem()==null){
+            return;
+        }
+}
+}
 
 class Service
 {
-  position 439 21 330 197;
+  position 1 0 330 197;
   position.association Service__branch 0,58 138,46;
   position.association Service__branch 0,54 138,49;
 }
 
 class customer
 {
-  position 613 429 109 95;
-  position.association customer__serviceRating 83,58 30,0;
+  position 56 336 224 163;
+  position.association customer__serviceRating 224,4 0,8;
   position.association customer__purchaseService 164,32 0,41;
-  position.association customer__search 124,95 25,0;
+  position.association customer__search 224,101 0,2;
 }
 
 class admin
 {
-  position 21 365 109 41;
+  position 286 561 321 197;
   }
 
 class employee
 {
-  position 374 388 185 129;
+  position 26 636 185 129;
   position.association employee__workday 123,0 0,5;
   position.association Workday__employee 131,0 19,180;
 }
 
 class user
 {
-  position 187 72 228 163;
+  position 207 171 228 163;
 }
 
 class branch
 {
-  position 136 626 203 129;
-  position.association branch__employee 47,0 0,29;
+  position 444 36 203 129;
+  position.association branch__employee 0,82 17,0;
   position.association Service__branch 138,56 0,49;
 }
 
 class serviceRating
 {
-  position 531 648 203 112;
+  position 403 301 203 129;
 }
 
 class search
 {
-  position 751 613 195 78;
+  position 427 422 212 112;
 }
 
-class purchaseService
+
+class Workday
 {
-  position 948 456 109 112;
+  position 606 32 223 163;
+}//$?[End_of_model]$?
+
+namespace -;
+
+
+class ServiceRequest
+{
+  position 671 327 506 316;
+  position.association ServiceRequest__customer 0,225 224,153;
+}
+
+class Service
+{
+  position 1 0 330 197;
+}
+
+class user
+{
+  position 207 171 228 163;
+}
+
+class customer
+{
+  position 56 336 224 163;
+}
+
+class admin
+{
+  position 286 561 321 197;
+}
+
+class employee
+{
+  position 26 636 185 129;
+}
+
+class branch
+{
+  position 444 36 203 129;
 }
 
 class Workday
 {
-  position 677 164 109 180;
+  position 606 32 223 163;
+}
+
+class serviceRating
+{
+  position 403 301 203 129;
+}
+
+class search
+{
+  position 427 422 212 112;
+}
+
+class Service
+{
+  position 1 0 330 197;
+}
+
+class user
+{
+  position 207 171 228 163;
+}
+
+class customer
+{
+  position 56 336 224 163;
+}
+
+class admin
+{
+  position 286 561 321 197;
+}
+
+class employee
+{
+  position 26 636 185 129;
+}
+
+class branch
+{
+  position 444 36 203 129;
+}
+
+class Workday
+{
+  position 606 32 223 163;
+}
+
+class serviceRating
+{
+  position 403 301 203 129;
+}
+
+class search
+{
+  position 427 422 212 112;
+}
+
+class ServiceRequest
+{
+  position 671 327 506 316;
+}
+
+class ServiceHandler
+{
+  position 913 101 113 61;
+  position.association ServiceHandler__ServiceRequest 126,146 344,0;
+  position.association ServiceHandler__employee 0,118 185,42;
 }
