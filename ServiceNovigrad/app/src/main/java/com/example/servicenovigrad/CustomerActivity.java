@@ -1,5 +1,6 @@
 package com.example.servicenovigrad;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.servicenovigrad.services.Service;
+import com.example.servicenovigrad.services.ServiceRequest;
 import com.example.servicenovigrad.userManagement.Customer;
 import com.example.servicenovigrad.userManagement.Employee;
 import com.example.servicenovigrad.userManagement.Workday;
@@ -73,6 +75,15 @@ public class CustomerActivity extends AppCompatActivity {
         ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
                 android.R.layout.simple_spinner_dropdown_item, dbHandler.getEmployeeList());
         spinnerChooseBranch.setAdapter(adapter);
+
+        String alertMsg=requestAlert();
+        if(!alertMsg.equals("")){
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(CustomerActivity.this);
+            builder1.setMessage(alertMsg);
+            builder1.setCancelable(true);
+            AlertDialog alert = builder1.create();
+            alert.show();
+        }
 
         mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -163,6 +174,21 @@ public class CustomerActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public String requestAlert(){
+        String result="";
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        ArrayList<ServiceRequest> requestList = dbHandler.findAllCustomerRequests(currentAccount.getUsername());
+        for(ServiceRequest request: requestList){
+            if(request.getApproved()==1){
+                result=result+request.toString()+" has been accepted\n";
+            }
+            else if(request.getApproved()==-1){
+                result=result+request.toString()+" has been rejected";
+            }
+        }
+        return result;
     }
 
     public void fillWeekday(){

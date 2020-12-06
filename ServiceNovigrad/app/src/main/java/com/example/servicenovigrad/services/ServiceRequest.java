@@ -79,6 +79,7 @@ public class ServiceRequest {
     ArrayList<Field> Information;
     int approved;
 
+
     public ServiceRequest(int id, String branchID, String customerID, Service service,
                           ArrayList<Document> requirements, ArrayList<Field> information, int approved) {
         this.id = id;
@@ -121,6 +122,14 @@ public class ServiceRequest {
 
     public ArrayList<Field> getInformation() {
         return Information;
+    }
+
+    public int getApproved() {
+        return approved;
+    }
+
+    public void setApproved(int approved) {
+        this.approved = approved;
     }
 
     public String toString(){
