@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -45,7 +46,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
         try{
             updateRequestOptions();
         }
-        catch(Exception e){displayText.setText(e.toString());}
+        catch(Exception e){Toast.makeText(getApplicationContext(), "Failed to find requests",Toast.LENGTH_SHORT).show();}
 
         btnChooseRequest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +55,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
                     selectRequest(v);
                 }
                 catch(Exception e){
-                    displayText.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to select request",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -66,7 +67,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
                     rejectRequest(v);
                 }
                 catch(Exception e){
-                    displayText.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to reject request",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -78,7 +79,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
                     approveRequest(v);
                 }
                 catch(Exception e){
-                    displayText.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to approve request",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -89,7 +90,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
                 try {
                     viewInfo();
                 } catch (Exception e) {
-                    displayText.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to view request",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -107,6 +108,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
 
     public void approveRequest(View view){
         if(chosenRequest==null){
+            Toast.makeText(getApplicationContext(), "Choose a request",Toast.LENGTH_SHORT).show();
             return;
         }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
@@ -115,6 +117,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
 
     public void viewInfo(){
         if(chosenRequest==null){
+            Toast.makeText(getApplicationContext(), "Choose a request",Toast.LENGTH_SHORT).show();
             return;
         }
         Intent viewIntent = new Intent(this, ViewRequestActivity.class);
@@ -124,6 +127,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
 
     public void rejectRequest(View view){
         if(chosenRequest==null){
+            Toast.makeText(getApplicationContext(), "Choose a request",Toast.LENGTH_SHORT).show();
             return;
         }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
@@ -132,6 +136,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
 
     public void selectRequest(View view){
         if(spinnerAvailableRequests.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select a Request from the dropdown menu",Toast.LENGTH_SHORT).show();
             return;
         }
         chosenRequest=(ServiceRequest) spinnerAvailableRequests.getSelectedItem();

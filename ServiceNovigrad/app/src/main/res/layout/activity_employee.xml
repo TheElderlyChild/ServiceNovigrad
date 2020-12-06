@@ -1,161 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".EmployeeActivity">
-
-    <Button
-        android:id="@+id/btnSetTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="93dp"
-        android:layout_marginLeft="93dp"
-        android:layout_marginTop="325dp"
-        android:text="Set Times" />
-
-    <Button
-        android:id="@+id/btnGetTime"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="207dp"
-        android:layout_marginLeft="207dp"
-        android:layout_marginTop="325dp"
-        android:text="Set To Times" />
-
-    <TextView
-        android:id="@+id/closeTimeLabel"
-        android:layout_width="88dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="39dp"
-        android:layout_marginLeft="39dp"
-        android:layout_marginTop="263dp"
-        android:text="Close Time" />
-
-    <Switch
-        android:id="@+id/switchOpen"
-        android:layout_width="61dp"
-        android:layout_height="53dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="203dp"
-        android:layout_marginLeft="203dp"
-        android:layout_marginTop="373dp" />
-
-    <Spinner
-        android:id="@+id/daySelect"
-        android:layout_width="188dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="372dp"
-        android:background="@android:drawable/btn_dropdown"
-        android:ems="10"
-        android:spinnerMode="dropdown" />
-
-    <TimePicker
-        android:id="@+id/closeTime"
-        android:layout_width="223dp"
-        android:layout_height="85dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="128dp"
-        android:layout_marginLeft="128dp"
-        android:layout_marginTop="236dp"
-        android:timePickerMode="spinner" />
 
     <TextView
         android:id="@+id/displayComment"
         android:layout_width="match_parent"
-        android:layout_height="59dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:text="This branch is open" />
-
-    <Switch
-        android:id="@+id/switchOffered"
-        android:layout_width="57dp"
-        android:layout_height="43dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="203dp"
-        android:layout_marginLeft="203dp"
-        android:layout_marginTop="62dp" />
 
     <Spinner
         android:id="@+id/availableServices"
-        android:layout_width="174dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="11dp"
-        android:layout_marginLeft="11dp"
-        android:layout_marginTop="76dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:background="@android:drawable/btn_dropdown"
         android:ems="10"
         android:spinnerMode="dropdown" />
 
-    <TimePicker
-        android:id="@+id/openTime"
-        android:layout_width="221dp"
-        android:layout_height="84dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="129dp"
-        android:layout_marginLeft="129dp"
-        android:layout_marginTop="149dp"
-        android:timePickerMode="spinner" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_height="0dp">
 
-    <TextView
-        android:id="@+id/openTimeLabel"
-        android:layout_width="81dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="44dp"
-        android:layout_marginLeft="44dp"
-        android:layout_marginTop="180dp"
-        android:text="Open Time" />
+        <Switch
+            android:id="@+id/switchOffered"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/btnViewService"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="View Service" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/openTimeLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Open Time" />
+
+        <TimePicker
+            android:id="@+id/openTime"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:timePickerMode="spinner" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/closeTimeLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Close Time" />
+
+        <TimePicker
+            android:id="@+id/closeTime"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:timePickerMode="spinner" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_height="0dp">
+
+        <Button
+            android:id="@+id/btnGetTime"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Set To Times" />
+
+        <Button
+            android:id="@+id/btnSetTime"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Set Times" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_height="0dp">
+
+        <Spinner
+            android:id="@+id/daySelect"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="@android:drawable/btn_dropdown"
+            android:ems="10"
+            android:spinnerMode="dropdown" />
+
+        <Switch
+            android:id="@+id/switchOpen"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
 
     <Button
         android:id="@+id/btnViewRequests"
-        android:layout_width="325dp"
-        android:layout_height="62dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="437dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:text="View Service Requests" />
 
-    <Button
-        android:id="@+id/btnViewService"
-        android:layout_width="147dp"
-        android:layout_height="36dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="203dp"
-        android:layout_marginLeft="203dp"
-        android:layout_marginTop="107dp"
-        android:text="View Service" />
-</RelativeLayout>
+</LinearLayout>

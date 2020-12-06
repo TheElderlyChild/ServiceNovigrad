@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,22 +63,23 @@ public class EmployeeActivity extends AppCompatActivity {
         try{
             fillWorkdaySpinner();
         }
-        catch(Exception e){commentDisplay.setText(e.toString());}
+        catch(Exception e){Toast.makeText(getApplicationContext(), "Could not find options for the dropdown menu" +
+                "",Toast.LENGTH_SHORT).show();}
 
         try{ fillOfferingSpinner(); }
-        catch(Exception e){commentDisplay.setText(e.toString());}
+        catch(Exception e){Toast.makeText(getApplicationContext(), "Could not find Services offered",Toast.LENGTH_SHORT).show();}
 
         switchOffered.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 try{updateOfferingWithSwitch(buttonView, isChecked);;}
-                catch(Exception e){commentDisplay.setText(e.toString());}
+                catch(Exception e){Toast.makeText(getApplicationContext(), "Error connecting to Database",Toast.LENGTH_SHORT).show();}
             }
         });
 
         switchOpen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 try{updateWorkdayWithSwitch(buttonView, isChecked); }
-                catch(Exception e){commentDisplay.setText(e.toString());}
+                catch(Exception e){Toast.makeText(getApplicationContext(), "Error connecting to database",Toast.LENGTH_SHORT).show();}
             }
         });
 
@@ -113,7 +115,7 @@ public class EmployeeActivity extends AppCompatActivity {
                     viewService(v);
                 }
                 catch(Exception e){
-                    commentDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Could not show service details",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -125,7 +127,7 @@ public class EmployeeActivity extends AppCompatActivity {
                     viewServiceRequests(v);
                 }
                 catch(Exception e){
-                    commentDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Could not load service requests",Toast.LENGTH_SHORT).show();;
                 }
             }
         });
@@ -137,7 +139,7 @@ public class EmployeeActivity extends AppCompatActivity {
                     setToTime(v);
                 }
                 catch(Exception e){
-                    commentDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Could not reset Time Selectors",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -149,7 +151,7 @@ public class EmployeeActivity extends AppCompatActivity {
                     setTimes(v);
                 }
                 catch(Exception e){
-                    commentDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Could not set appropriate time",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -173,7 +175,10 @@ public class EmployeeActivity extends AppCompatActivity {
     }
 
     public void updateOfferingSpinner(){
-        if(spinnerAvailableServices.getSelectedItem()==null){return;}
+        if(spinnerAvailableServices.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select an Available Service",Toast.LENGTH_SHORT).show();
+            return;
+        }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         ArrayList<String[]> offerings = dbHandler.findOfferings(currentAccount.getUsername());
         ArrayList<Employee.Offering> offeringsClass = new ArrayList<Employee.Offering>();
@@ -192,7 +197,10 @@ public class EmployeeActivity extends AppCompatActivity {
     }
 
     public void updateOfferingWithSwitch(CompoundButton buttonView, boolean isChecked){
-        if(spinnerAvailableServices.getSelectedItem()==null){return;}
+        if(spinnerAvailableServices.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select an Available Service",Toast.LENGTH_SHORT).show();
+            return;
+        }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         Employee.Offering offering = (Employee.Offering) spinnerAvailableServices.getSelectedItem();
         dbHandler.updateOffering(currentAccount.getUsername(), offering.getService().getId(), isChecked);
@@ -206,7 +214,7 @@ public class EmployeeActivity extends AppCompatActivity {
 
     public void viewService(View view){
         if (spinnerAvailableServices.getSelectedItem()==null){
-            commentDisplay.setText("Select a service to view");
+            Toast.makeText(getApplicationContext(), "Select a Service to View",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -228,7 +236,7 @@ public class EmployeeActivity extends AppCompatActivity {
     public void setTimes(View view){
         if (LocalTime.of(pickOpenTime.getHour(),pickOpenTime.getMinute()).compareTo(
                 LocalTime.of(pickCloseTime.getHour(),pickCloseTime.getMinute()))>=0){
-            commentDisplay.setText("Start Time cannot be more than or equal to end time");
+            Toast.makeText(getApplicationContext(), "Branch cannot open after the closing time",Toast.LENGTH_SHORT).show();
             return;
         }
         currentAccount.setStartTime(LocalTime.of(pickOpenTime.getHour(),pickOpenTime.getMinute()));
@@ -252,7 +260,9 @@ public class EmployeeActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateWorkdayWithSwitch(CompoundButton buttonView, boolean isChecked){
-        if(spinnerDaySelect.getSelectedItem()==null){return;}
+        if(spinnerDaySelect.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select a Day",Toast.LENGTH_SHORT).show();
+            return;}
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
 
         Workday workday= (Workday) spinnerDaySelect.getSelectedItem();
@@ -265,7 +275,9 @@ public class EmployeeActivity extends AppCompatActivity {
     }
 
     public void updateSwitchWithWorkday(){
-        if(spinnerDaySelect.getSelectedItem()==null){return;}
+        if(spinnerDaySelect.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select a Day",Toast.LENGTH_SHORT).show();
+            return;}
         Workday workday= (Workday) spinnerDaySelect.getSelectedItem();
         switchOpen.setChecked(workday.isAvailable());
     }

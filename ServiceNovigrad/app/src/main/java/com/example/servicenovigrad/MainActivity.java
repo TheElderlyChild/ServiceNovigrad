@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     update();
                     }
                 catch(Exception e){
-                    screenAuth.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Login",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -60,40 +61,62 @@ public class MainActivity extends AppCompatActivity {
                     newAccount(v);
                     update();}
                 catch(Exception e){
-                    screenAuth.setText("Sign Up Failure");
-                }           }
+                    Toast.makeText(getApplicationContext(), "Failed to Sign Up",Toast.LENGTH_SHORT).show();
+                }
+            }
         });
     }
 
     private void update(){
-
-        if (currentAccount!=null) {
-            screenAuth.setText("Login Successful");
-            Intent roleIntent;
-            switch(currentAccount.getRole()){
-                case "Admin":
-                    roleIntent = new Intent(this, AdminActivity.class);
-                    roleIntent.putExtra("username", currentAccount.getUsername());
-                    roleIntent.putExtra("password", currentAccount.getPassword());
-                    startActivity(roleIntent);
-                    break;
-                case "Employee":
-                    roleIntent = new Intent(this, EmployeeActivity.class);
-                    roleIntent.putExtra("username", currentAccount.getUsername());
-                    roleIntent.putExtra("password", currentAccount.getPassword());
-                    startActivity(roleIntent);
-                    break;
-                case "Customer":
-                    roleIntent = new Intent(this, CustomerActivity.class);
-                    roleIntent.putExtra("username", currentAccount.getUsername());
-                    roleIntent.putExtra("password", currentAccount.getPassword());
-                    startActivity(roleIntent);
-                    break;
-            }
+        if (currentAccount==null) {return;}
+        Toast.makeText(getApplicationContext(), "Login Successful!",Toast.LENGTH_SHORT).show();
+        Intent roleIntent;
+        switch(currentAccount.getRole()){
+            case "Admin":
+                roleIntent = new Intent(this, AdminActivity.class);
+                roleIntent.putExtra("username", currentAccount.getUsername());
+                roleIntent.putExtra("password", currentAccount.getPassword());
+                currentAccount=null;
+                startActivity(roleIntent);
+                break;
+            case "Employee":
+                roleIntent = new Intent(this, EmployeeActivity.class);
+                roleIntent.putExtra("username", currentAccount.getUsername());
+                roleIntent.putExtra("password", currentAccount.getPassword());
+                startActivity(roleIntent);
+                currentAccount=null;
+                break;
+            case "Customer":
+                roleIntent = new Intent(this, CustomerActivity.class);
+                roleIntent.putExtra("username", currentAccount.getUsername());
+                roleIntent.putExtra("password", currentAccount.getPassword());
+                startActivity(roleIntent);
+                currentAccount=null;
+                break;
         }
     }
 
     public void newAccount (View view) {
+        if (!InputValidator.valUsername(inputUsername.getText().toString())){
+            Toast.makeText(getApplicationContext(), "Invalid Username. (Remove spaces between "+
+                    "characters in the username",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!InputValidator.valPassword(inputPassword.getText().toString())){
+            Toast.makeText(getApplicationContext(), "Invalid Password.\n"+
+                    "Password must be between 8 and 20 characters\n"+
+                    "Password must contain at least one digit, uppercase letter, lower case letter and special character\n"+
+                    "Password must not have any spaces",Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (!InputValidator.valStringInput(inputFirstName.getText().toString())){
+            Toast.makeText(getApplicationContext(), "Please Enter a First Name",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!InputValidator.valStringInput(inputLastName.getText().toString())){
+            Toast.makeText(getApplicationContext(), "Please Enter a Last Name",Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         UserAccount ua = UserAccount.createAccount(inputRole.getSelectedItem().toString(),
                 new User(inputFirstName.getText().toString(),
@@ -103,32 +126,39 @@ public class MainActivity extends AppCompatActivity {
 
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         if (dbHandler.usernameExists(ua.getUsername())){
-            screenAuth.setText("The Username has already been taken");
+            Toast.makeText(getApplicationContext(), "That username has been taken",Toast.LENGTH_SHORT).show();
         }
         else {
             dbHandler.addAccount(ua);
-            inputPassword.setText("");
-            inputFirstName.setText("");
-            inputLastName.setText("");
-            inputUsername.setText("");
-
+            clearFields();
             currentAccount=ua;
         }
     }
 
+    public void clearFields(){
+        inputPassword.setText("");
+        inputFirstName.setText("");
+        inputLastName.setText("");
+        inputUsername.setText("");
+    }
 
     public void lookupAccount (View view) {
-
+        if (!InputValidator.valStringInput(inputUsername.getText().toString())){
+            Toast.makeText(getApplicationContext(), "Please Enter a Username",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!InputValidator.valStringInput(inputPassword.getText().toString())){
+            Toast.makeText(getApplicationContext(), "Please Enter a Password.",Toast.LENGTH_LONG).show();
+            return;
+        }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         UserAccount ua = dbHandler.findAccount(inputUsername.getText().toString(),
             inputPassword.getText().toString());
-
         if (ua != null) {
-            inputFirstName.setText(String.valueOf(ua.getFirstName()));
-            inputLastName.setText(String.valueOf(ua.getLastName()));
+            clearFields();
             currentAccount=ua;}
         else{
-            screenAuth.setText("Login Unsuccessful");
+            Toast.makeText(MainActivity.this, "Login Unsuccessful",Toast.LENGTH_SHORT).show();
         }
     }
 }

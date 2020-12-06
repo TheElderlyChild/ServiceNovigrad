@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -69,7 +70,9 @@ public class ViewRequestActivity extends AppCompatActivity {
     }
 
     public void updateImage(){
-        if(spinnerDocs.getSelectedItem()==null){return;}
+        if(spinnerDocs.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select a document",Toast.LENGTH_SHORT).show();
+            return;}
         ServiceRequest.Document doc=(ServiceRequest.Document) spinnerDocs.getSelectedItem();
         docImage.setImageBitmap(doc.getValue());
     }

@@ -3,6 +3,7 @@ package com.example.servicenovigrad;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -11,7 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.servicenovigrad.services.DocumentTemplate;
@@ -75,7 +78,7 @@ public class MakeRequestActivity extends AppCompatActivity {
             displayInfo.setText(request.toString());
             dbHandler.fillRequestWithData(request);}
 
-        catch(Exception e){displayInfo.setText(e.toString());}
+        catch(Exception e){Toast.makeText(getApplicationContext(), "Error loading request",Toast.LENGTH_SHORT).show();}
 
         fillSpinners();
 
@@ -86,7 +89,7 @@ public class MakeRequestActivity extends AppCompatActivity {
                 try {
                     addField();
                 } catch (Exception e) {
-                    displayInfo.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error adding Field",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -97,7 +100,7 @@ public class MakeRequestActivity extends AppCompatActivity {
                 try {
                     addDocument();
                 } catch (Exception e) {
-                    displayInfo.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error adding Document",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -109,7 +112,7 @@ public class MakeRequestActivity extends AppCompatActivity {
                     makeRequest();
                     //displayInfo.setText(request.toString()+request.getInformation().toString()+ request.getRequirements().toString());
                 } catch (Exception e) {
-                    displayInfo.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error adding request",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -120,7 +123,7 @@ public class MakeRequestActivity extends AppCompatActivity {
                 try {
                     viewRequest();
                 } catch (Exception e) {
-                    displayInfo.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error viewing request",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -138,10 +141,26 @@ public class MakeRequestActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void addField(){
-        if(!validateField(inputFieldValue.getText().toString())){
+        if(spinnerFields.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select a field",Toast.LENGTH_SHORT).show();
             return;
         }
+        if(!InputValidator.valStringInput(inputFieldValue.getText().toString())){
+            Toast.makeText(getApplicationContext(), "Enter a value for this field",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        FieldTemplate ft = (FieldTemplate) spinnerFields.getSelectedItem();
+
+        if(!InputValidator.validateField(inputFieldValue.getText().toString().trim(),ft.getType())){
+            Toast.makeText(getApplicationContext(), "Your input has the wrong format.\n" +
+                    "Ensure dates are in dddd-MM-dd format\n" +
+                    "And addresses are written properly",Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if(spinnerFields.getSelectedItem()==null){return;}
         FieldTemplate template = (FieldTemplate) spinnerFields.getSelectedItem();
 
@@ -176,8 +195,9 @@ public class MakeRequestActivity extends AppCompatActivity {
                 if (null != selectedImageUri) {
                     try {
                         selectedImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                        Toast.makeText(getApplicationContext(), "Image Successfully loaded",Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
-                        displayInfo.setText(e.toString());
+                        Toast.makeText(getApplicationContext(), "Error loading document",Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -188,9 +208,11 @@ public class MakeRequestActivity extends AppCompatActivity {
         openImageChooser();
 
         if(selectedImageBitmap==null){
-            displayInfo.setText("Select an image");
+            Toast.makeText(getApplicationContext(), "Select an Image",Toast.LENGTH_SHORT).show();
         }
-        if(spinnerDocuments.getSelectedItem()==null){return;}
+        if(spinnerDocuments.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Select a Document",Toast.LENGTH_SHORT).show();
+            return;}
         DocumentTemplate template = (DocumentTemplate) spinnerDocuments.getSelectedItem();
 
         ServiceRequest.Document selectDocument=null;
@@ -223,8 +245,4 @@ public class MakeRequestActivity extends AppCompatActivity {
         dbHandler.updateDataFromRequest(request);
     }
 
-
-    public boolean validateField(String input){
-        return true;
-    }
 }

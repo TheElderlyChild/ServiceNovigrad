@@ -1,13 +1,13 @@
 package com.example.servicenovigrad;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -50,7 +50,7 @@ public class EditServiceActivity extends AppCompatActivity {
                     selectService(v);
                 }
                 catch(Exception e){
-                    displayInstr.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Select Service",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -62,7 +62,7 @@ public class EditServiceActivity extends AppCompatActivity {
                     chooseDoc(v);
                 }
                 catch(Exception e){
-                    displayInstr.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Choose Document",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -74,7 +74,7 @@ public class EditServiceActivity extends AppCompatActivity {
                     removeDoc(v);
                 }
                 catch(Exception e){
-                    displayInstr.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Display Instruction",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -86,7 +86,7 @@ public class EditServiceActivity extends AppCompatActivity {
                     chooseField(v);
                 }
                 catch(Exception e){
-                    displayInstr.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Choose Field",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -98,13 +98,12 @@ public class EditServiceActivity extends AppCompatActivity {
                     removeField(v);
                 }
                 catch(Exception e){
-                    displayInstr.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Remove Field",Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
     }
-
 
     public void updateOptions(View view){
         if(selectedService==null){
@@ -166,8 +165,8 @@ public class EditServiceActivity extends AppCompatActivity {
     }
 
     public void selectService(View view){
-        if (TextUtils.isEmpty(editServiceName.getText().toString())) {
-            displayInstr.setText("Enter a service");
+        if (InputValidator.valStringInput(editServiceName.getText().toString())) {
+            Toast.makeText(getApplicationContext(), "Enter a Service Name",Toast.LENGTH_SHORT).show();
         }
 
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
@@ -183,11 +182,11 @@ public class EditServiceActivity extends AppCompatActivity {
 
     public void chooseDoc(View view){
         if(selectedService==null){
-            displayInstr.setText("You need to select a Service");
+            Toast.makeText(getApplicationContext(), "Choose a Service",Toast.LENGTH_SHORT).show();
             return;
         }
         if (spinnerAvailableDocs.getSelectedItem()==null){
-            displayInstr.setText("Choose a Document to add");
+            Toast.makeText(getApplicationContext(), "Choose a Document to Add",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -202,11 +201,11 @@ public class EditServiceActivity extends AppCompatActivity {
 
     public void removeDoc(View view){
         if(selectedService==null){
-            displayInstr.setText("You need to select a Service");
+            Toast.makeText(getApplicationContext(), "Choose a Service",Toast.LENGTH_SHORT).show();
             return;
         }
         if (spinnerChosenDocs.getSelectedItem()==null){
-            displayInstr.setText("Choose a Document to Remove");
+            Toast.makeText(getApplicationContext(), "Choose a Document to Remove",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -221,11 +220,11 @@ public class EditServiceActivity extends AppCompatActivity {
 
     public void chooseField(View view){
         if(selectedService==null){
-            displayInstr.setText("You need to select a Service");
+            Toast.makeText(getApplicationContext(), "Choose a Service",Toast.LENGTH_SHORT).show();
             return;
         }
         if (spinnerAvailableFields.getSelectedItem()==null){
-            displayInstr.setText("Choose a Field to add");
+            Toast.makeText(getApplicationContext(), "Choose a Field to Add",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -240,11 +239,11 @@ public class EditServiceActivity extends AppCompatActivity {
 
     public void removeField(View view){
         if(selectedService==null){
-            displayInstr.setText("You need to select a Service");
+            Toast.makeText(getApplicationContext(), "Choose a Service",Toast.LENGTH_SHORT).show();
             return;
         }
         if (spinnerChosenFields.getSelectedItem()==null){
-            displayInstr.setText("Choose a Field to Remove");
+            Toast.makeText(getApplicationContext(), "Choose a Field to Remove",Toast.LENGTH_SHORT).show();
             return;
         }
 

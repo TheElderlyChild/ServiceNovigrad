@@ -3,6 +3,7 @@ package com.example.servicenovigrad;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,7 +37,10 @@ public class ServiceActivity extends AppCompatActivity {
     }
 
     public void fillInformation(){
-        if(currentService==null){return;}
+        if(currentService==null){
+            Toast.makeText(getApplicationContext(), "Could not find service",Toast.LENGTH_SHORT).show();
+            finish();
+            return;}
         String text = textInfo.getText()+": \n";
         for(FieldTemplate field : currentService.getInformation()){
             text = text + field.getName()+ "\n";
@@ -46,7 +50,10 @@ public class ServiceActivity extends AppCompatActivity {
     }
 
     public void fillRequirements(){
-        if(currentService==null){return;}
+        if(currentService==null){
+            Toast.makeText(getApplicationContext(), "Could not find service",Toast.LENGTH_SHORT).show();
+            finish();
+            return;}
         String text = textDoc.getText()+": \n";
         for(DocumentTemplate doc : currentService.getRequirements()){
             text = text + doc.getName()+ " - " + doc.getDescription()+

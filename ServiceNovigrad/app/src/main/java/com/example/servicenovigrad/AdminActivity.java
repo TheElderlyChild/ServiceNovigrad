@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -54,6 +55,9 @@ public class AdminActivity extends AppCompatActivity {
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         currentAccount = (Admin) dbHandler.findAccount(username, password);
 
+        textDisplay.setText(currentAccount.getFirstName()+" "+currentAccount.getLastName()+" "
+            +" choose a branch/employee to get started");
+
         ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
                 android.R.layout.simple_spinner_dropdown_item, dbHandler.getEmployeeList());
         spinnerEmployee.setAdapter(adapter);
@@ -62,6 +66,7 @@ public class AdminActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_dropdown_item, dbHandler.getAllServices());
         spinnerViewService.setAdapter(serviceArrayAdapter);
 
+
         btnSelectEmployee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +74,7 @@ public class AdminActivity extends AppCompatActivity {
                     selectEmployee(v);
                 }
                 catch(Exception e){
-                    textDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Select Employee",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -81,7 +86,7 @@ public class AdminActivity extends AppCompatActivity {
                     addServiceToEmployee(v);
                 }
                 catch(Exception e){
-                    textDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Choose Service for Employee",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -93,7 +98,7 @@ public class AdminActivity extends AppCompatActivity {
                     removeServiceFromEmployee(v);
                 }
                 catch(Exception e){
-                    textDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Remove Service from Employee",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -105,7 +110,7 @@ public class AdminActivity extends AppCompatActivity {
                     deleteEmployee(v);
                 }
                 catch(Exception e){
-                    textDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Delete Employee",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -117,7 +122,7 @@ public class AdminActivity extends AppCompatActivity {
                     viewService(v);
                 }
                 catch(Exception e){
-                    textDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Load Service",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -129,7 +134,7 @@ public class AdminActivity extends AppCompatActivity {
                     deleteSelectService(v);
                 }
                 catch(Exception e){
-                    textDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Delete Service",Toast.LENGTH_SHORT).show();;
                 }
             }
         });
@@ -141,7 +146,7 @@ public class AdminActivity extends AppCompatActivity {
                     createService(v);
                 }
                 catch(Exception e){
-                    textDisplay.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed to Add/Edit Service",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -154,22 +159,21 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     public void selectEmployee (View view) {
-        if (spinnerEmployee.getSelectedItem()==null){
-            textDisplay.setText("Choose an Employee");
+        if (!InputValidator.valSpinner(spinnerEmployee)){
+            Toast.makeText(getApplicationContext(), "Choose an Employee",Toast.LENGTH_SHORT).show();
             return;
         }
         selectedEmployee = (Employee) spinnerEmployee.getSelectedItem();
         updateOptions();
-
     }
 
     public void addServiceToEmployee (View view) {
         if(selectedEmployee==null){
-            textDisplay.setText("You need to select an Employee");
+            Toast.makeText(getApplicationContext(), "Choose an Employee ",Toast.LENGTH_SHORT).show();
             return;
         }
         if (spinnerAvailable.getSelectedItem()==null){
-            textDisplay.setText("Choose a Service to Add");
+            Toast.makeText(getApplicationContext(), "Choose a Service to Add",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -184,11 +188,11 @@ public class AdminActivity extends AppCompatActivity {
 
     public void removeServiceFromEmployee (View view) {
         if(selectedEmployee==null){
-            textDisplay.setText("You need to select an Employee");
+            Toast.makeText(getApplicationContext(), "Choose an Employee",Toast.LENGTH_SHORT).show();
             return;
         }
         if (spinnerChosen.getSelectedItem()==null){
-            textDisplay.setText("Choose a Service to Remove");
+            Toast.makeText(getApplicationContext(), "Choose a Service to Remove",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -203,7 +207,7 @@ public class AdminActivity extends AppCompatActivity {
 
     public void deleteEmployee (View view) {
         if (selectedEmployee==null){
-            textDisplay.setText("Choose an Employee");
+            Toast.makeText(getApplicationContext(), "Choose an Employee",Toast.LENGTH_SHORT).show();
             return;
         }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
@@ -262,7 +266,7 @@ public class AdminActivity extends AppCompatActivity {
 
     public void viewService(View view){
         if (spinnerViewService.getSelectedItem()==null){
-            textDisplay.setText("Select a service to view");
+            Toast.makeText(getApplicationContext(), "Select a Service to View",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -274,7 +278,7 @@ public class AdminActivity extends AppCompatActivity {
 
     public void deleteSelectService(View view){
         if (spinnerViewService.getSelectedItem()==null){
-            textDisplay.setText("Select a service to view");
+            Toast.makeText(getApplicationContext(), "Select a Service to Delete",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -289,7 +293,6 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     public void createService(View view) {
-
         Intent editServiceIntent = new Intent(this, EditServiceActivity.class);
         startActivity(editServiceIntent);
     }

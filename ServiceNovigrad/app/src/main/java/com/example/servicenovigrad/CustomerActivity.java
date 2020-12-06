@@ -14,6 +14,7 @@ import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,7 +74,7 @@ public class CustomerActivity extends AppCompatActivity {
             fillServiceSearchBar();
         }
         catch(Exception e){
-            displayBranch.setText(e.toString());
+            Toast.makeText(getApplicationContext(), "Error loading services",Toast.LENGTH_SHORT).show();
         }
 
         ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
@@ -124,7 +125,7 @@ public class CustomerActivity extends AppCompatActivity {
                     selectBranch();
                 }
                 catch(Exception e){
-                    displayBranch.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error selecting branch",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -136,7 +137,7 @@ public class CustomerActivity extends AppCompatActivity {
                     selectService();
                 }
                 catch(Exception e){
-                    displayBranch.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error selecting service",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -148,7 +149,7 @@ public class CustomerActivity extends AppCompatActivity {
                     makeRequest();
                 }
                 catch(Exception e){
-                    displayBranch.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error making request",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -160,7 +161,7 @@ public class CustomerActivity extends AppCompatActivity {
                     branchServiceSearch();
                 }
                 catch(Exception e){
-                    displayBranch.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error searching for service",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -170,7 +171,7 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try{
-                    branchWorkDaySearch();
+                    Toast.makeText(getApplicationContext(), "Error searching for specific time",Toast.LENGTH_SHORT).show();
                 }
                 catch(Exception e){
                     displayBranch.setText(e.toString());
@@ -185,7 +186,7 @@ public class CustomerActivity extends AppCompatActivity {
                     makeRating();
                 }
                 catch(Exception e){
-                    displayBranch.setText(e.toString());
+                    Toast.makeText(getApplicationContext(), "Error rating branch",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -220,19 +221,25 @@ public class CustomerActivity extends AppCompatActivity {
     }
 
     public void selectBranch(){
-        if (spinnerChooseBranch.getSelectedItem()==null){return;}
+        if (spinnerChooseBranch.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Choose a Branch",Toast.LENGTH_SHORT).show();
+            return;}
         selectedEmployee = (Employee) spinnerChooseBranch.getSelectedItem();
         updateBranchOptions();
         updateRating();
     }
 
     public void selectService(){
-        if (spinnerChooseService.getSelectedItem()==null){return;}
+        if (spinnerChooseService.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Choose a service",Toast.LENGTH_SHORT).show();
+            return;}
         selectedService = (Service) spinnerChooseService.getSelectedItem();
     }
 
     public void branchServiceSearch(){
-        if (spinnerSearchService.getSelectedItem()==null){return;}
+        if (spinnerSearchService.getSelectedItem()==null){
+            Toast.makeText(getApplicationContext(), "Choose a Service to search for",Toast.LENGTH_SHORT).show();
+            return;}
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         Service service = (Service) spinnerSearchService.getSelectedItem();
         ArrayList<Employee> ale = dbHandler.getEmployeeList();
@@ -253,7 +260,7 @@ public class CustomerActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void branchWorkDaySearch(){
         if (spinnerWeekday.getSelectedItem()==null){
-            displayBranch.setText("Select A Weekday");
+            Toast.makeText(getApplicationContext(), "Select a Weekday",Toast.LENGTH_SHORT).show();
             return;}
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         String day = (String) spinnerWeekday.getSelectedItem();
@@ -274,7 +281,7 @@ public class CustomerActivity extends AppCompatActivity {
         spinnerChooseBranch.setAdapter(adapter);
 
         if (selectHour==-1 || selectMinute==-1){
-            displayBranch.setText("Select A Time Of Availability for a more refined search");
+            Toast.makeText(getApplicationContext(), "Select A Time Of Availability for a more refined search",Toast.LENGTH_SHORT).show();
             return;}
 
         for(Employee branch: newAle){
@@ -319,7 +326,7 @@ public class CustomerActivity extends AppCompatActivity {
 
     public void makeRequest(){
         if (selectedService==null || selectedEmployee==null){
-            displayBranch.setText("Select a service to view");
+            Toast.makeText(getApplicationContext(), "Select a Service to view",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -342,8 +349,12 @@ public class CustomerActivity extends AppCompatActivity {
     }
 
     public void makeRating(){
-        if(selectedEmployee==null){return;}
+        if(selectedEmployee==null){
+            Toast.makeText(getApplicationContext(), "Select a branch to rate",Toast.LENGTH_SHORT).show();
+            return;
+        }
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         dbHandler.addRating(selectedEmployee.getUsername(),currentAccount.getUsername(),branchRating.getRating());
+        updateRating();
     }
 }
