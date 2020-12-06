@@ -4,6 +4,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.servicenovigrad.services.Service;
@@ -19,6 +21,7 @@ import com.example.servicenovigrad.userManagement.Customer;
 import com.example.servicenovigrad.userManagement.Employee;
 import com.example.servicenovigrad.userManagement.Workday;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,8 +35,8 @@ public class CustomerActivity extends AppCompatActivity {
     Customer currentAccount;
     Employee selectedEmployee;
     Service selectedService;
-    int selectHour;
-    int selectMinute;
+    int selectHour=-1;
+    int selectMinute=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +138,31 @@ public class CustomerActivity extends AppCompatActivity {
             }
         });
 
+        btnSearchService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    branchServiceSearch();
+                }
+                catch(Exception e){
+                    displayBranch.setText(e.toString());
+                }
+            }
+        });
+
+        btnSearchWorkHour.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                try{
+                    branchWorkDaySearch();
+                }
+                catch(Exception e){
+                    displayBranch.setText(e.toString());
+                }
+            }
+        });
+
     }
 
     public void fillWeekday(){
@@ -159,6 +187,74 @@ public class CustomerActivity extends AppCompatActivity {
     public void selectService(){
         if (spinnerChooseService.getSelectedItem()==null){return;}
         selectedService = (Service) spinnerChooseService.getSelectedItem();
+    }
+
+    public void branchServiceSearch(){
+        if (spinnerSearchService.getSelectedItem()==null){return;}
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        Service service = (Service) spinnerSearchService.getSelectedItem();
+        ArrayList<Employee> ale = dbHandler.getEmployeeList();
+        ArrayList<Employee> newAle = new ArrayList<Employee>();
+
+        for(Employee branch: ale){
+            for(String[] offering : dbHandler.findOfferings(branch.getUsername())){
+                if(offering[0].equals(service.getName()) && offering[1].equals("1")){
+                    newAle.add(branch);
+                }
+            }
+        }
+        ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
+                android.R.layout.simple_spinner_dropdown_item, newAle);
+        spinnerChooseBranch.setAdapter(adapter);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void branchWorkDaySearch(){
+        if (spinnerWeekday.getSelectedItem()==null){
+            displayBranch.setText("Select A Weekday");
+            return;}
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        String day = (String) spinnerWeekday.getSelectedItem();
+        ArrayList<Employee> ale = dbHandler.getEmployeeList();
+        ArrayList<Employee> newAle = new ArrayList<Employee>();
+
+        for(Employee branch: ale){
+            dbHandler.fillEmployeeWithData(branch);
+            for(Workday workday : branch.getWorkdays()){
+                if(Workday.daysInString[workday.getDay()]==day && workday.isAvailable()){
+                    newAle.add(branch);
+                }
+            }
+        }
+
+        ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(this,
+                android.R.layout.simple_spinner_dropdown_item, newAle);
+        spinnerChooseBranch.setAdapter(adapter);
+
+        if (selectHour==-1 || selectMinute==-1){
+            displayBranch.setText("Select A Time Of Availability for a more refined search");
+            return;}
+
+        for(Employee branch: newAle){
+            boolean compareStart=LocalTime.of(selectHour,selectMinute).compareTo(branch.getStartTime())>=0;
+            boolean compareEnd=LocalTime.of(selectHour,selectMinute).compareTo(branch.getEndTime())<0;
+            ArrayList<Employee> secondAle = new ArrayList<Employee>();
+
+            if (compareStart && compareEnd){
+                    secondAle.add(branch);
+            }
+
+            adapter = new ArrayAdapter<Employee>(this,
+                    android.R.layout.simple_spinner_dropdown_item, secondAle);
+            spinnerChooseBranch.setAdapter(adapter);
+        }
+
+
+
+
+
+
+
     }
 
     public void updateBranchOptions(){
