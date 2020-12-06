@@ -23,7 +23,7 @@ import com.example.servicenovigrad.userManagement.UserAccount;
 import java.util.ArrayList;
 
 public class NovigradDBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 9;
 
     //Class Variables
     private static final String DATABASE_NAME = "novigradDB.db";
@@ -43,6 +43,8 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         ServiceHandler.createInformation(db);
         ServiceHandler.createOfferings(db);
         ServiceHandler.createServiceRequests(db);
+        ServiceHandler.createRequestDocuments(db);
+        ServiceHandler.createRequestFields(db);
     }
 
     @Override
@@ -65,6 +67,10 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         AccountHandler.createEmployeeDetails(db);
         db.execSQL("DROP TABLE IF EXISTS " + ServiceHandler.TABLE_SERVICE_REQUESTS);
         ServiceHandler.createServiceRequests(db);
+        db.execSQL("DROP TABLE IF EXISTS " + ServiceHandler.TABLE_REQUEST_DOCUMENT);
+        ServiceHandler.createRequestDocuments(db);
+        db.execSQL("DROP TABLE IF EXISTS " + ServiceHandler.TABLE_REQUEST_FIELD);
+        ServiceHandler.createRequestFields(db);
     }
 
     public void addAccount(UserAccount ua){
@@ -419,11 +425,31 @@ public class NovigradDBHandler extends SQLiteOpenHelper {
         return ServiceHandler.findServiceRequest(this, requestID);
     }
 
+    public ServiceRequest findRequest(String customerName, String branchName, int serviceId){
+        return ServiceHandler.findRequest(this, customerName, branchName, serviceId);
+    }
+
     public ArrayList<ServiceRequest> findAllServiceRequests(String employeeName){
         return ServiceHandler.findAllServiceRequests(this, employeeName);
     }
 
     public void updateRequestApproval(int requestID, int value){
         ServiceHandler.updateRequestApproval(this, requestID, value);
+    }
+
+    public ArrayList<ServiceRequest> findAllCustomerRequests(String customerName){
+        return ServiceHandler.findAllCustomerRequests(this, customerName);
+    }
+
+    public void fillRequestWithData(ServiceRequest request){
+        ServiceHandler.fillRequestWithData(this, request);
+    }
+
+    public void updateDataFromRequest(ServiceRequest request) {
+        ServiceHandler.updateDataFromRequest(this, request);
+    }
+
+    public void makeServiceRequest(ServiceRequest request) {
+        ServiceHandler.makeServiceRequest(this, request);
     }
 }

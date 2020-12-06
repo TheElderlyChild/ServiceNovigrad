@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.servicenovigrad.BitmapConverter;
 import com.example.servicenovigrad.NovigradDBHandler;
 import com.example.servicenovigrad.userManagement.AccountHandler;
 
@@ -26,7 +27,10 @@ public class ServiceHandler{
     public static final String REQUEST_COLUMN_EMPLOYEE_NAME="employeeUsername";
     public static final String REQUEST_APPROVED_STATUS="approvedStatus";
 
-
+    public static final String TABLE_REQUEST_DOCUMENT="reqDocuments";
+    public static final String TABLE_REQUEST_FIELD="reqFields";
+    public static final String REQUEST_DOCUMENT_VALUE="reqDocumentValue";
+    public static final String REQUEST_FIELD_VALUE="reqFieldValue";
 
     public static void createServices(SQLiteDatabase db) {
         String CREATE_SERVICES_TABLE = "CREATE TABLE " +
@@ -182,6 +186,24 @@ public class ServiceHandler{
         db.execSQL(CREATE_REQUESTS_TABLE);
     }
 
+    public static void createRequestDocuments(SQLiteDatabase db) {
+        String CREATE_DOC_VALUE_TABLE = "CREATE TABLE " +
+                TABLE_REQUEST_DOCUMENT + "(" +
+                REQUEST_COLUMN_ID + " INTEGER NOT NULL, " +
+                DocumentHandler.COLUMN_ID + " INTEGER NOT NULL, " +
+                REQUEST_DOCUMENT_VALUE + " BLOB NOT NULL" +
+                ")";
+        db.execSQL(CREATE_DOC_VALUE_TABLE);
+    }
+    public static void createRequestFields(SQLiteDatabase db) {
+        String CREATE_FIELD_VALUE_TABLE = "CREATE TABLE " +
+                TABLE_REQUEST_FIELD + "(" +
+                REQUEST_COLUMN_ID + " INTEGER NOT NULL, " +
+                FieldHandler.COLUMN_ID + " INTEGER NOT NULL, " +
+                REQUEST_FIELD_VALUE + " TEXT NOT NULL" +
+                ")";
+        db.execSQL(CREATE_FIELD_VALUE_TABLE);
+    }
 
 
     public static void addService(NovigradDBHandler ndh, Service service){
@@ -384,7 +406,131 @@ public class ServiceHandler{
         values.put(REQUEST_APPROVED_STATUS, value);
         db.update(TABLE_SERVICE_REQUESTS,values, REQUEST_COLUMN_ID+ " = "+ String.valueOf(requestID)
             ,null);
+        db.close();
     }
 
+    public static void makeServiceRequest(NovigradDBHandler ndh, ServiceRequest request){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        ContentValues values=new ContentValues();
 
+        String query = "Select * FROM " + TABLE_SERVICE_REQUESTS +
+                " WHERE " + REQUEST_COLUMN_CUSTOMER_NAME+ " = \""+ request.getCustomerName()+ "\"" +
+                " AND " + REQUEST_COLUMN_EMPLOYEE_NAME+ " = \""+ request.getBranchName()+ "\"" +
+                " AND " + SERVICE_COLUMN_ID + " = " + request.getService().getId();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()){
+            return;
+        }
+
+        values.put(REQUEST_COLUMN_EMPLOYEE_NAME, request.getBranchName());
+        values.put(REQUEST_COLUMN_CUSTOMER_NAME, request.getCustomerName());
+        values.put(SERVICE_COLUMN_ID, request.getService().getId());
+        db.insert(TABLE_SERVICE_REQUESTS, null, values);
+        db.close();
+    }
+
+    public static ArrayList<ServiceRequest> findAllCustomerRequests(NovigradDBHandler ndh, String customerName){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_SERVICE_REQUESTS +
+                " WHERE " + REQUEST_COLUMN_CUSTOMER_NAME+ " = \""+ customerName+ "\"";
+
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList<ServiceRequest> als = new ArrayList<ServiceRequest>();
+        ServiceRequest request;
+
+        while (cursor.moveToNext()){
+            request = findServiceRequest(ndh, cursor.getInt(0));
+            als.add(request);
+        }
+        cursor.close();
+        db.close();
+        return als;
+    }
+
+    public static ServiceRequest findRequest(NovigradDBHandler ndh, String customerName, String branchName, int serviceId){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_SERVICE_REQUESTS +
+                " WHERE " + REQUEST_COLUMN_CUSTOMER_NAME+ " = \""+ customerName+ "\"" +
+                " AND " + REQUEST_COLUMN_EMPLOYEE_NAME+ " = \""+ branchName+ "\"" +
+                " AND " + SERVICE_COLUMN_ID + " = " + serviceId;
+
+        Cursor cursor = db.rawQuery(query, null);
+        ServiceRequest request=null;
+
+        if (cursor.moveToFirst()){
+            request = findServiceRequest(ndh, cursor.getInt(0));
+        }
+        cursor.close();
+        db.close();
+        return request;
+    }
+
+    public static void fillRequestWithData(NovigradDBHandler ndh, ServiceRequest request){
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        ArrayList<ServiceRequest.Document> ald = new ArrayList<ServiceRequest.Document>();
+        ArrayList<ServiceRequest.Field> alf = new ArrayList<ServiceRequest.Field>();
+        ServiceRequest.Document doc;
+        ServiceRequest.Field field;
+        String query = "Select * FROM " + TABLE_REQUEST_FIELD + " WHERE " +
+                REQUEST_COLUMN_ID+ " = "+ request.getId();
+        Cursor cursor = db.rawQuery(query, null);
+        while(cursor.moveToNext()){
+            alf.add(new ServiceRequest.Field(cursor.getInt(1),cursor.getString(2)));
+        }
+        query = "Select * FROM " + TABLE_REQUEST_DOCUMENT + " WHERE " +
+                REQUEST_COLUMN_ID+ " = "+ request.getId();
+        cursor = db.rawQuery(query, null);
+        while(cursor.moveToNext()){
+            ald.add(new ServiceRequest.Document(cursor.getInt(1),
+                    BitmapConverter.getImage(cursor.getBlob(2))));
+        }
+        request.setInformation(alf);
+        request.setRequirements(ald);
+        cursor.close();
+        db.close();
+    }
+
+    public static void updateDataFromRequest(NovigradDBHandler ndh, ServiceRequest request){
+        //String result="";
+        SQLiteDatabase db = ndh.getWritableDatabase();
+        String query = "Select * FROM " + TABLE_REQUEST_FIELD + " WHERE " +
+                REQUEST_COLUMN_ID+ " = "+ request.getId();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            db.delete(TABLE_REQUEST_FIELD,
+                    REQUEST_COLUMN_ID + " = "+ request.getId(), null);
+        }
+        query = "Select * FROM " + TABLE_REQUEST_DOCUMENT + " WHERE " +
+                REQUEST_COLUMN_ID+ " = "+ request.getId();
+        cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            db.delete(TABLE_REQUEST_DOCUMENT,
+                    REQUEST_COLUMN_ID + " = "+ request.getId(), null);
+        }
+        ContentValues values;
+        for(ServiceRequest.Field field : request.getInformation()){
+            values = new ContentValues();
+            values.put(REQUEST_COLUMN_ID, request.getId());
+            values.put(FieldHandler.COLUMN_ID, field.getFieldId());
+            values.put(REQUEST_FIELD_VALUE, field.getValue());
+            db.insert(TABLE_REQUEST_FIELD, null, values);
+            //result+=values.toString();
+        }
+
+        for(ServiceRequest.Document doc: request.getRequirements()){
+            if (doc.getValue()==null){continue;}
+            values = new ContentValues();
+            values.put(REQUEST_COLUMN_ID, request.getId());
+            values.put(DocumentHandler.COLUMN_ID, doc.getDocId());
+            values.put(REQUEST_DOCUMENT_VALUE, BitmapConverter.getBytes(doc.getValue()));
+            db.insert(TABLE_REQUEST_DOCUMENT, null, values);
+            //result+=values.toString();
+        }
+
+        cursor.close();
+        db.close();
+        //return result;
+    }
 }

@@ -5,17 +5,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ServiceRequestActivity">
+    tools:context=".MakeRequestActivity">
 
     <TextView
-        android:id="@+id/textDisplay"
+        android:id="@+id/displayInfo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Choose a service request"/>
+        android:text="Choose a service request" />
 
     <Spinner
-        android:id="@+id/availableRequests"
+        android:id="@+id/spinnerFields"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:drawable/btn_dropdown"
+        android:ems="10"
+        android:spinnerMode="dropdown" />
+
+    <EditText
+        android:id="@+id/inputFieldValue"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <Button
+        android:id="@+id/btnAddFieldValue"
+        android:layout_width="200dp"
+        android:layout_height="0dp"
+        android:layout_gravity="right"
+        android:layout_weight="1"
+        android:ems="10"
+        android:text="Add Field"/>
+
+    <Spinner
+        android:id="@+id/spinnerDocuments"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -24,35 +49,28 @@
         android:spinnerMode="dropdown"/>
 
     <Button
-        android:id="@+id/btnChooseRequest"
+        android:id="@+id/btnAddDocValue"
         android:layout_width="200dp"
         android:layout_height="0dp"
         android:layout_gravity="right"
         android:layout_weight="1"
         android:ems="10"
-        android:text="Select Request"/>
+        android:text="Add Document"/>
 
     <Button
-        android:id="@+id/btnViewInfo"
+        android:id="@+id/btnReviewRequest"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:ems="10"
-        android:text="View Request Information"/>
+        android:text="Review Request"/>
 
     <Button
-        android:id="@+id/btnRejectRequest"
+        android:id="@+id/btnAddRequest"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:ems="10"
-        android:text="reject"/>
-    <Button
-        android:id="@+id/btnApproveRequest"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:ems="10"
-        android:text="Approve"/>
+        android:text="Make Request"/>
 
 </LinearLayout>

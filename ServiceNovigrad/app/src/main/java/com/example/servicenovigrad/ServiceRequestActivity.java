@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class ServiceRequestActivity extends AppCompatActivity {
 
     TextView displayText;
-    Button btnChooseRequest, btnRejectRequest, btnApproveRequest;
+    Button btnChooseRequest, btnRejectRequest, btnApproveRequest, btnViewRequestInfo;
     Spinner spinnerAvailableRequests;
     Employee currentAccount;
     ServiceRequest chosenRequest;
@@ -32,6 +32,7 @@ public class ServiceRequestActivity extends AppCompatActivity {
         btnChooseRequest=(Button) findViewById(R.id.btnChooseRequest);
         btnRejectRequest=(Button) findViewById(R.id.btnRejectRequest);
         btnApproveRequest=(Button) findViewById(R.id.btnApproveRequest);
+        btnViewRequestInfo=(Button) findViewById(R.id.btnViewInfo);
         spinnerAvailableRequests=(Spinner) findViewById(R.id.availableRequests);
 
         Intent intent = getIntent();
@@ -82,6 +83,17 @@ public class ServiceRequestActivity extends AppCompatActivity {
             }
         });
 
+        btnViewRequestInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    viewInfo();
+                } catch (Exception e) {
+                    displayText.setText(e.toString());
+                }
+            }
+        });
+
     }
 
     public void updateRequestOptions(){
@@ -101,6 +113,12 @@ public class ServiceRequestActivity extends AppCompatActivity {
         dbHandler.updateRequestApproval(chosenRequest.getId(), 1);
     }
 
+    public void viewInfo(){
+        Intent viewIntent = new Intent(this, ViewRequestActivity.class);
+        viewIntent.putExtra("requestId", chosenRequest.getId());
+        startActivity(viewIntent);
+    }
+
     public void rejectRequest(View view){
         if(chosenRequest==null){
             return;
@@ -114,5 +132,8 @@ public class ServiceRequestActivity extends AppCompatActivity {
             return;
         }
         chosenRequest=(ServiceRequest) spinnerAvailableRequests.getSelectedItem();
+        NovigradDBHandler dbHandler = new NovigradDBHandler(this);
+        dbHandler.fillRequestWithData(chosenRequest);
+        displayText.setText(chosenRequest.toString());
     }
 }
