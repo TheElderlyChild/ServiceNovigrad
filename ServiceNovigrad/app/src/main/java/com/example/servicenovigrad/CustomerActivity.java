@@ -201,7 +201,7 @@ public class CustomerActivity extends AppCompatActivity {
                 result=result+request.toString()+" has been accepted\n";
             }
             else if(request.getApproved()==-1){
-                result=result+request.toString()+" has been rejected";
+                result=result+request.toString()+" has been rejected\n";
             }
         }
         return result;

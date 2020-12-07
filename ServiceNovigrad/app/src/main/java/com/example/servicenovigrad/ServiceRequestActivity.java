@@ -100,7 +100,6 @@ public class ServiceRequestActivity extends AppCompatActivity {
     public void updateRequestOptions(){
         NovigradDBHandler dbHandler = new NovigradDBHandler(this);
         ArrayList<ServiceRequest> requests=dbHandler.findAllServiceRequests(currentAccount.getUsername());
-        displayText.setText(requests.toString());
         ArrayAdapter<ServiceRequest> offeringAdapter = new ArrayAdapter<ServiceRequest>(this,
                 android.R.layout.simple_spinner_item, requests);
         spinnerAvailableRequests.setAdapter(offeringAdapter);
