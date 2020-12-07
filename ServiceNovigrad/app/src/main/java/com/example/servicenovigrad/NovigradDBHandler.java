@@ -23,7 +23,7 @@ import com.example.servicenovigrad.userManagement.UserAccount;
 import java.util.ArrayList;
 
 public class NovigradDBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 1;
 
     //Class Variables
     private static final String DATABASE_NAME = "novigradDB.db";
