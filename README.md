@@ -1,18 +1,14 @@
-"# project-weks" 
+FULL REPORT OF THE PROJECT FOUND IN SEGProjectReport.pdf
 
+Admin Detais
 Username : admin001
-
 Password : onePunch
 
 Don't run on a screen smaller than that of "Nexus 5".
-
-Currently, the project is implemented with RelativeLayouts which do not adapt to screen size
-Deliverable 4 will be implemented with ConstraintLayouts which can adapt.
+Minimum API: API 26.
 
 Elliot Kirsch and Shinlong Chen are currently not members of this group.
 Current Members are: Wyse Ebbah, Kian Mozefarian.
 
 Delay in Submission of Deliverable 2/3 is due to the restructure of the group, as members
-left close to the deadline without contibuting. 
-
-Minimum API: API 26. However, apart from the Employee Activity, all other activities have Minimum API 16.
+left close to the deadline without contibuting.
