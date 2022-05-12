@@ -1,7 +1,9 @@
 FULL REPORT OF THE PROJECT FOUND IN SEGProjectReport.pdf
 
-Admin Detais
+Admin Details
+
 Username : admin001
+
 Password : onePunch
 
 Don't run on a screen smaller than that of "Nexus 5".
